@@ -263,7 +263,7 @@
       <div class="row">
         <div class="slider-wrap">
           <label for="hitThreshold">Hit Threshold: Top <span id="thresholdValue">10</span>% by <code>track_popularity</code> (within each year)</label>
-          <input id="hitThreshold" type="range" min="5" max="30" step="1" value="10" />
+          <input id="hitThreshold" type="range" min="5" max="100" step="1" value="10" />
         </div>
       </div>
       <div class="row">
@@ -535,12 +535,17 @@
 
       const layout = {
         barmode: "overlay",
-        margin: { t: 80, r: 18, b: 65, l: 70 },
+        margin: { t: 108, r: 18, b: 65, l: 70 },
         paper_bgcolor: "rgba(0,0,0,0)",
         plot_bgcolor: "rgba(255,255,255,0.85)",
         title: {
           text: `Song Length Distribution (${titleSuffix})`,
-          font: { size: 18, family: "Space Grotesk, sans-serif" }
+          font: { size: 18, family: "Space Grotesk, sans-serif" },
+          x: 0.5,
+          xanchor: "center",
+          y: 0.965,
+          yanchor: "top",
+          pad: { t: 0, b: 14 }
         },
         xaxis: {
           title: "Track Duration (minutes)",
@@ -553,7 +558,8 @@
         },
         legend: {
           orientation: "h",
-          y: 1.18,
+          y: 1.045,
+          yanchor: "bottom",
           x: 0.5,
           xanchor: "center",
           bgcolor: "rgba(255,255,255,0.72)",
