@@ -1,0 +1,681 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Streamlined Era | Prototype</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=IBM+Plex+Serif:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+  <style>
+    :root {
+      --bg-1: #f5f2ea;
+      --bg-2: #e7eef6;
+      --ink: #1f2833;
+      --muted: #556270;
+      --accent-a: #d1495b;
+      --accent-b: #2f7d8c;
+      --card: rgba(255, 255, 255, 0.85);
+      --shadow: 0 16px 30px rgba(31, 40, 51, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Space Grotesk", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 10% 10%, rgba(209, 73, 91, 0.18), transparent 30%),
+        radial-gradient(circle at 85% 20%, rgba(47, 125, 140, 0.2), transparent 35%),
+        linear-gradient(135deg, var(--bg-1), var(--bg-2));
+      padding: 28px 18px 42px;
+    }
+
+    .wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      gap: 14px;
+    }
+
+    .title {
+      padding: 20px;
+      border-radius: 16px;
+      background: var(--card);
+      box-shadow: var(--shadow);
+      animation: rise 700ms ease-out;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      line-height: 1.15;
+      font-size: clamp(1.5rem, 3vw, 2.2rem);
+      letter-spacing: 0.01em;
+    }
+
+    .subtitle {
+      margin: 0;
+      font-family: "IBM Plex Serif", serif;
+      color: var(--muted);
+      line-height: 1.45;
+      font-size: 1rem;
+    }
+
+    .controls {
+      background: var(--card);
+      box-shadow: var(--shadow);
+      border-radius: 16px;
+      padding: 16px 18px;
+      animation: rise 900ms ease-out;
+      display: grid;
+      gap: 10px;
+    }
+
+    .row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 16px;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .slider-wrap {
+      flex: 1 1 260px;
+      display: grid;
+      gap: 6px;
+    }
+
+    .slider-wrap label {
+      font-weight: 600;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--accent-a);
+    }
+
+    .chip-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .chip {
+      border-radius: 999px;
+      border: 1px solid rgba(31, 40, 51, 0.12);
+      background: #fff;
+      padding: 6px 10px;
+      font-size: 0.9rem;
+      color: var(--ink);
+    }
+
+    button {
+      border: none;
+      border-radius: 999px;
+      padding: 7px 12px;
+      font-weight: 600;
+      cursor: pointer;
+      background: var(--accent-b);
+      color: #fff;
+    }
+
+    button:disabled {
+      opacity: 0.45;
+      cursor: default;
+    }
+
+    .panel {
+      background: var(--card);
+      box-shadow: var(--shadow);
+      border-radius: 16px;
+      padding: 8px 10px 12px;
+      animation: rise 1000ms ease-out;
+    }
+
+    .audio-panel {
+      background: var(--card);
+      box-shadow: var(--shadow);
+      border-radius: 16px;
+      padding: 14px;
+      animation: rise 950ms ease-out;
+      display: grid;
+      gap: 10px;
+    }
+
+    .audio-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .audio-title {
+      margin: 0;
+      font-size: 1rem;
+      font-weight: 700;
+    }
+
+    .audio-meta {
+      margin: 2px 0 0;
+      color: var(--muted);
+      font-family: "IBM Plex Serif", serif;
+      font-size: 0.95rem;
+    }
+
+    .audio-actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .link-btn {
+      display: inline-block;
+      border-radius: 999px;
+      padding: 7px 12px;
+      background: #1f2833;
+      color: #fff;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .embed-wrap iframe {
+      border: 0;
+      width: 100%;
+      max-width: 720px;
+      height: 152px;
+      border-radius: 12px;
+      background: #fff;
+    }
+
+    .charts-grid {
+      display: grid;
+      gap: 14px;
+    }
+
+    .caption {
+      padding: 8px 10px 6px;
+      font-family: "IBM Plex Serif", serif;
+      color: var(--muted);
+      font-size: 0.95rem;
+      line-height: 1.4;
+    }
+
+    .plot {
+      width: 100%;
+      height: 400px;
+    }
+
+    .foot {
+      font-size: 0.9rem;
+      color: var(--muted);
+      padding: 2px 2px 0;
+      font-family: "IBM Plex Serif", serif;
+    }
+
+    @keyframes rise {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (max-width: 680px) {
+      body {
+        padding: 16px 10px 28px;
+      }
+
+      .plot {
+        height: 330px;
+      }
+    }
+
+    @media (min-width: 980px) {
+      .charts-grid {
+        grid-template-columns: 1fr 1fr;
+        align-items: start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <section class="title">
+      <h1>The Streamlined Era: Hit Duration Trends</h1>
+      <p class="subtitle">
+        Click a year in Chart 1 to inspect that year in Chart 2. Without a selection, Chart 2 shows the global baseline distribution of all songs.
+      </p>
+    </section>
+
+    <section class="controls">
+      <div class="row">
+        <div class="slider-wrap">
+          <label for="hitThreshold">Hit Threshold: Top <span id="thresholdValue">10</span>% by <code>track_popularity</code> (within each year)</label>
+          <input id="hitThreshold" type="range" min="5" max="30" step="1" value="10" />
+        </div>
+      </div>
+      <div class="row">
+        <div class="chip-row">
+          <div class="chip" id="selectionLabel">Chart 2 Scope: All years</div>
+          <div class="chip" id="countLabel">n = ...</div>
+        </div>
+        <button id="clearSelection" disabled>Clear Year Selection</button>
+      </div>
+    </section>
+
+    <section class="audio-panel">
+      <div class="audio-head">
+        <div>
+          <p class="audio-title" id="trackTitle">Random hit track</p>
+          <p class="audio-meta" id="trackMeta">Choose a year or press random.</p>
+        </div>
+        <div class="audio-actions">
+          <button id="randomTrackBtn">Random Track</button>
+          <a id="spotifyLink" class="link-btn" href="#" target="_blank" rel="noopener noreferrer">Open in Spotify</a>
+        </div>
+      </div>
+      <div class="embed-wrap" id="embedWrap">
+        <iframe
+          id="spotifyEmbed"
+          title="Spotify Track Embed"
+          src=""
+          loading="lazy"
+          allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+        ></iframe>
+      </div>
+      <p class="caption" id="audioCaption">Audio panel: random hit song from the current scope, embedded from Spotify.</p>
+    </section>
+
+    <section class="charts-grid">
+      <section class="panel">
+        <div id="chart1" class="plot" aria-label="Average hit duration by year"></div>
+        <p class="caption">Chart 1: Average <code>track_duration_min</code> for yearly hits. Click a point to filter Chart 2.</p>
+      </section>
+
+      <section class="panel">
+        <div id="chart2" class="plot" aria-label="Distribution of song lengths"></div>
+        <p class="caption" id="chart2Caption">Chart 2: Distribution of <code>track_duration_min</code> for all songs.</p>
+      </section>
+    </section>
+
+    <p class="foot">
+      Note: This interaction uses observed dataset values only. "Hit" is defined operationally by your chosen popularity percentile in each year.
+    </p>
+  </main>
+
+  <script>
+    const state = {
+      songs: [],
+      selectedYear: null,
+      hitPercent: 10,
+      hitIndex: new Set(),
+      yearlyStats: [],
+      activeTrack: null,
+      minYear: null,
+      maxYear: null
+    };
+
+    const ids = {
+      chart1: document.getElementById("chart1"),
+      chart2: document.getElementById("chart2"),
+      threshold: document.getElementById("hitThreshold"),
+      thresholdValue: document.getElementById("thresholdValue"),
+      selectionLabel: document.getElementById("selectionLabel"),
+      countLabel: document.getElementById("countLabel"),
+      clearBtn: document.getElementById("clearSelection"),
+      chart2Caption: document.getElementById("chart2Caption"),
+      trackTitle: document.getElementById("trackTitle"),
+      trackMeta: document.getElementById("trackMeta"),
+      spotifyLink: document.getElementById("spotifyLink"),
+      spotifyEmbed: document.getElementById("spotifyEmbed"),
+      randomTrackBtn: document.getElementById("randomTrackBtn")
+    };
+
+    function quantile(sortedArr, q) {
+      if (!sortedArr.length) return NaN;
+      const pos = (sortedArr.length - 1) * q;
+      const base = Math.floor(pos);
+      const rest = pos - base;
+      const next = sortedArr[base + 1] !== undefined ? sortedArr[base + 1] : sortedArr[base];
+      return sortedArr[base] + rest * (next - sortedArr[base]);
+    }
+
+    function mean(arr) {
+      if (!arr.length) return NaN;
+      return arr.reduce((acc, val) => acc + val, 0) / arr.length;
+    }
+
+    function median(arr) {
+      if (!arr.length) return NaN;
+      const sorted = [...arr].sort((a, b) => a - b);
+      const mid = Math.floor(sorted.length / 2);
+      return sorted.length % 2 === 0
+        ? (sorted[mid - 1] + sorted[mid]) / 2
+        : sorted[mid];
+    }
+
+    function buildYearGroups(songs) {
+      const groups = new Map();
+      for (const song of songs) {
+        if (!groups.has(song.year)) groups.set(song.year, []);
+        groups.get(song.year).push(song);
+      }
+      return groups;
+    }
+
+    function computeHitsAndYearStats() {
+      const groups = buildYearGroups(state.songs);
+      const hitSet = new Set();
+      const stats = [];
+
+      const years = [...groups.keys()].sort((a, b) => a - b);
+      for (const year of years) {
+        const rows = groups.get(year);
+        const pops = rows.map(d => d.popularity).sort((a, b) => a - b);
+        const cutoff = quantile(pops, 1 - state.hitPercent / 100);
+        const hits = rows.filter(d => d.popularity >= cutoff);
+        hits.forEach(h => hitSet.add(h.idx));
+
+        stats.push({
+          year,
+          meanHitDuration: mean(hits.map(d => d.duration)),
+          total: rows.length,
+          hits: hits.length,
+          cutoff
+        });
+      }
+
+      state.hitIndex = hitSet;
+      state.yearlyStats = stats;
+    }
+
+    function getScopedSongs() {
+      return state.selectedYear === null
+        ? state.songs
+        : state.songs.filter(d => d.year === state.selectedYear);
+    }
+
+    function getScopedHitSongs() {
+      return getScopedSongs().filter(d => state.hitIndex.has(d.idx));
+    }
+
+    function updateAudioPanel(forceNew = false) {
+      const hitSongs = getScopedHitSongs();
+      if (!hitSongs.length) {
+        state.activeTrack = null;
+        ids.trackTitle.textContent = "No hit track available";
+        ids.trackMeta.textContent = "Try a different year or hit threshold.";
+        ids.spotifyEmbed.src = "";
+        ids.spotifyLink.href = "#";
+        ids.spotifyLink.setAttribute("aria-disabled", "true");
+        return;
+      }
+
+      const activeStillInScope =
+        state.activeTrack && hitSongs.some(d => d.idx === state.activeTrack.idx);
+
+      if (forceNew || !activeStillInScope) {
+        const randomIndex = Math.floor(Math.random() * hitSongs.length);
+        state.activeTrack = hitSongs[randomIndex];
+      }
+
+      const track = state.activeTrack;
+      const safeName = track.trackName || "Unknown track";
+      const safeArtist = track.artistName || "Unknown artist";
+      ids.trackTitle.textContent = safeName;
+      ids.trackMeta.textContent = `${safeArtist} • ${track.year} • ${track.duration.toFixed(2)} min • Popularity ${track.popularity}`;
+
+      const openUrl = `https://open.spotify.com/track/${track.trackId}`;
+      const embedUrl = `https://open.spotify.com/embed/track/${track.trackId}?utm_source=generator`;
+      ids.spotifyLink.href = openUrl;
+      ids.spotifyLink.setAttribute("aria-disabled", "false");
+      ids.spotifyEmbed.src = embedUrl;
+      const audioCaption = document.getElementById("audioCaption");
+      audioCaption.textContent = "Audio panel: if playback is restricted in the embed, use 'Open in Spotify'.";
+    }
+
+    function renderChart1() {
+      const years = state.yearlyStats.map(d => d.year);
+      const values = state.yearlyStats.map(d => d.meanHitDuration);
+
+      const lineTrace = {
+        type: "scatter",
+        mode: "lines+markers",
+        x: years,
+        y: values,
+        marker: {
+          size: 8,
+          color: years.map(y => y === state.selectedYear ? "#d1495b" : "#2f7d8c"),
+          line: { width: 1, color: "#ffffff" }
+        },
+        line: {
+          width: 2.5,
+          color: "#2f7d8c"
+        },
+        hovertemplate:
+          "Year: %{x}<br>Avg hit duration: %{y:.2f} min<extra></extra>"
+      };
+
+      const layout = {
+        margin: { t: 40, r: 18, b: 55, l: 55 },
+        paper_bgcolor: "rgba(0,0,0,0)",
+        plot_bgcolor: "rgba(255,255,255,0.85)",
+        title: {
+          text: "Average Hit Song Duration by Release Year",
+          font: { size: 18, family: "Space Grotesk, sans-serif" }
+        },
+        xaxis: {
+          title: "Release Year",
+          gridcolor: "rgba(31,40,51,0.08)",
+          tickmode: "linear",
+          dtick: state.maxYear && state.minYear
+            ? (state.maxYear - state.minYear > 50 ? 10 : 5)
+            : 5
+        },
+        yaxis: {
+          title: "Average Hit Duration (minutes)",
+          gridcolor: "rgba(31,40,51,0.08)"
+        },
+        hovermode: "closest"
+      };
+
+      Plotly.react(ids.chart1, [lineTrace], layout, { responsive: true, displayModeBar: false });
+      ids.chart1.removeAllListeners("plotly_click");
+
+      ids.chart1.on("plotly_click", evt => {
+        const year = Number(evt.points[0].x);
+        state.selectedYear = state.selectedYear === year ? null : year;
+        renderAll(true);
+      });
+    }
+
+    function renderChart2() {
+      const scopedSongs = getScopedSongs();
+      const scopedHits = scopedSongs.filter(d => state.hitIndex.has(d.idx));
+      const allDurations = scopedSongs.map(d => d.duration);
+      const hitDurations = scopedHits.map(d => d.duration);
+      const med = median(allDurations);
+
+      const titleSuffix = state.selectedYear === null ? "All Years" : `Year ${state.selectedYear}`;
+
+      const traces = [
+        {
+          type: "histogram",
+          name: "All Songs",
+          x: allDurations,
+          histnorm: "probability",
+          opacity: 0.45,
+          marker: { color: "#5a9fb0", line: { color: "#2f7d8c", width: 1 } },
+          xbins: { size: 0.25 },
+          hovertemplate: "Duration bin: %{x:.2f} min<br>Share of all songs: %{y:.2%}<extra></extra>"
+        },
+        {
+          type: "histogram",
+          name: `Hits (Top ${state.hitPercent}%)`,
+          x: hitDurations,
+          histnorm: "probability",
+          opacity: 0.8,
+          marker: { color: "#d1495b", line: { color: "#982a3a", width: 1 } },
+          xbins: { size: 0.25 },
+          hovertemplate: "Duration bin: %{x:.2f} min<br>Share of hits: %{y:.2%}<extra></extra>"
+        }
+      ];
+
+      const layout = {
+        barmode: "overlay",
+        margin: { t: 80, r: 18, b: 65, l: 70 },
+        paper_bgcolor: "rgba(0,0,0,0)",
+        plot_bgcolor: "rgba(255,255,255,0.85)",
+        title: {
+          text: `Song Length Distribution (${titleSuffix})`,
+          font: { size: 18, family: "Space Grotesk, sans-serif" }
+        },
+        xaxis: {
+          title: "Track Duration (minutes)",
+          gridcolor: "rgba(31,40,51,0.08)"
+        },
+        yaxis: {
+          title: "Share of Tracks",
+          tickformat: ".0%",
+          gridcolor: "rgba(31,40,51,0.08)"
+        },
+        legend: {
+          orientation: "h",
+          y: 1.18,
+          x: 0.5,
+          xanchor: "center",
+          bgcolor: "rgba(255,255,255,0.72)",
+          bordercolor: "rgba(31,40,51,0.15)",
+          borderwidth: 1
+        }
+      };
+
+      const medianShape = Number.isFinite(med) ? [{
+        type: "line",
+        x0: med,
+        x1: med,
+        y0: 0,
+        y1: 1,
+        yref: "paper",
+        line: { color: "#1f2833", width: 2, dash: "dot" }
+      }] : [];
+
+      layout.shapes = medianShape;
+
+      Plotly.react(ids.chart2, traces, layout, { responsive: true, displayModeBar: false });
+
+      ids.selectionLabel.textContent = state.selectedYear === null
+        ? "Chart 2 Scope: All years"
+        : `Chart 2 Scope: ${state.selectedYear}`;
+      ids.countLabel.textContent = `n = ${scopedSongs.length.toLocaleString()} songs, ${scopedHits.length.toLocaleString()} hits`;
+      ids.clearBtn.disabled = state.selectedYear === null;
+      ids.chart2Caption.textContent = state.selectedYear === null
+        ? `Chart 2: Distribution of track_duration_min for all songs. Median = ${med.toFixed(2)} min.`
+        : `Chart 2: Distribution of track_duration_min for songs released in ${state.selectedYear}. Median = ${med.toFixed(2)} min.`;
+    }
+
+    function renderAll(forceNewTrack = false) {
+      computeHitsAndYearStats();
+      renderChart1();
+      renderChart2();
+      updateAudioPanel(forceNewTrack);
+    }
+
+    ids.threshold.addEventListener("input", e => {
+      state.hitPercent = Number(e.target.value);
+      ids.thresholdValue.textContent = String(state.hitPercent);
+      renderAll();
+    });
+
+    ids.clearBtn.addEventListener("click", () => {
+      state.selectedYear = null;
+      renderAll(true);
+    });
+
+    ids.randomTrackBtn.addEventListener("click", () => {
+      updateAudioPanel(true);
+    });
+
+    async function init() {
+      const csvPath = "spotify_data%20clean.csv";
+      const response = await fetch(csvPath);
+      const raw = await response.text();
+      const lines = raw.trim().split(/\r?\n/);
+      const headers = lines[0].split(",");
+
+      function splitCSV(line) {
+        const out = [];
+        let current = "";
+        let inQuotes = false;
+        for (let i = 0; i < line.length; i++) {
+          const ch = line[i];
+          if (ch === '"') {
+            if (inQuotes && line[i + 1] === '"') {
+              current += '"';
+              i++;
+            } else {
+              inQuotes = !inQuotes;
+            }
+          } else if (ch === "," && !inQuotes) {
+            out.push(current);
+            current = "";
+          } else {
+            current += ch;
+          }
+        }
+        out.push(current);
+        return out;
+      }
+
+      const idxDuration = headers.indexOf("track_duration_min");
+      const idxPopularity = headers.indexOf("track_popularity");
+      const idxRelease = headers.indexOf("album_release_date");
+      const idxTrackId = headers.indexOf("track_id");
+      const idxTrackName = headers.indexOf("track_name");
+      const idxArtistName = headers.indexOf("artist_name");
+
+      const songs = [];
+      for (let i = 1; i < lines.length; i++) {
+        const parts = splitCSV(lines[i]);
+        const duration = Number(parts[idxDuration]);
+        const popularity = Number(parts[idxPopularity]);
+        const release = parts[idxRelease] || "";
+        const year = Number(release.slice(0, 4));
+        const trackId = (parts[idxTrackId] || "").trim();
+        const trackName = (parts[idxTrackName] || "").trim();
+        const artistName = (parts[idxArtistName] || "").trim();
+
+        if (!Number.isFinite(duration) || !Number.isFinite(popularity) || !Number.isFinite(year)) continue;
+        if (duration <= 0 || duration > 15) continue;
+        if (!/^[A-Za-z0-9]{22}$/.test(trackId)) continue;
+
+        songs.push({ idx: i, year, duration, popularity, trackId, trackName, artistName });
+      }
+
+      const currentYear = new Date().getFullYear();
+      state.songs = songs.filter(d => d.year >= 2000 && d.year <= currentYear);
+      const years = state.songs.map(d => d.year);
+      state.minYear = Math.min(...years);
+      state.maxYear = Math.max(...years);
+      renderAll();
+    }
+
+    init().catch(err => {
+      console.error(err);
+      document.body.innerHTML = "<main style='padding:20px;font-family:sans-serif;'>Failed to load CSV data. Please serve this directory with a local web server.</main>";
+    });
+  </script>
+</body>
+</html>
