@@ -1,0 +1,12 @@
+# Large local data files (do not publish)
+tracks_features.csv
+tracks_features_with_popularity.csv
+tracks_features_with_popularity_viz.csv
+tracks_features_with_popularity.sample.csv
+tracks_features_with_popularity_viz.sample.csv
+spotify_popularity_cache.csv
+spotify_popularity_cache.sample.csv
+
+# Python cache
+__pycache__/
+*.pyc

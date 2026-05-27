@@ -262,7 +262,7 @@
     <section class="controls">
       <div class="row">
         <div class="slider-wrap">
-          <label for="hitThreshold">Hit Threshold: Top <span id="thresholdValue">10</span>% by <code>track_popularity</code> (within each year)</label>
+          <label for="hitThreshold">Hit Threshold: Top <span id="thresholdValue">10</span>% by <code>spotify_popularity</code> (within each year)</label>
           <input id="hitThreshold" type="range" min="5" max="100" step="1" value="10" />
         </div>
       </div>
@@ -301,17 +301,17 @@
     <section class="charts-grid">
       <section class="panel">
         <div id="chart1" class="plot" aria-label="Average hit duration by year"></div>
-        <p class="caption">Chart 1: Average <code>track_duration_min</code> for yearly hits. Click a point to filter Chart 2.</p>
+        <p class="caption">Chart 1: Average track duration (minutes) for yearly hits. Click a point to filter Chart 2.</p>
       </section>
 
       <section class="panel">
         <div id="chart2" class="plot" aria-label="Distribution of song lengths"></div>
-        <p class="caption" id="chart2Caption">Chart 2: Distribution of <code>track_duration_min</code> for all songs.</p>
+        <p class="caption" id="chart2Caption">Chart 2: Distribution of track duration (minutes) for all songs.</p>
       </section>
     </section>
 
-    <p class="foot">
-      Note: This interaction uses observed dataset values only. "Hit" is defined operationally by your chosen popularity percentile in each year.
+    <p class="foot" id="footNote">
+      Note: This interaction uses observed dataset values only. "Hit" is defined operationally by your chosen Spotify popularity percentile in each year.
     </p>
   </main>
 
@@ -340,7 +340,8 @@
       trackMeta: document.getElementById("trackMeta"),
       spotifyLink: document.getElementById("spotifyLink"),
       spotifyEmbed: document.getElementById("spotifyEmbed"),
-      randomTrackBtn: document.getElementById("randomTrackBtn")
+      randomTrackBtn: document.getElementById("randomTrackBtn"),
+      footNote: document.getElementById("footNote")
     };
 
     function quantile(sortedArr, q) {
@@ -588,8 +589,8 @@
       ids.countLabel.textContent = `n = ${scopedSongs.length.toLocaleString()} songs, ${scopedHits.length.toLocaleString()} hits`;
       ids.clearBtn.disabled = state.selectedYear === null;
       ids.chart2Caption.textContent = state.selectedYear === null
-        ? `Chart 2: Distribution of track_duration_min for all songs. Median = ${med.toFixed(2)} min.`
-        : `Chart 2: Distribution of track_duration_min for songs released in ${state.selectedYear}. Median = ${med.toFixed(2)} min.`;
+        ? `Chart 2: Distribution of track duration for all songs. Median = ${med.toFixed(2)} min.`
+        : `Chart 2: Distribution of track duration for songs released in ${state.selectedYear}. Median = ${med.toFixed(2)} min.`;
     }
 
     function renderAll(forceNewTrack = false) {
@@ -615,9 +616,29 @@
     });
 
     async function init() {
-      const csvPath = "spotify_data%20clean.csv";
-      const response = await fetch(csvPath);
-      const raw = await response.text();
+      const csvCandidates = [
+        "tracks_features_pages.csv",
+        "tracks_features_with_popularity_viz.csv",
+        "tracks_features_with_popularity.csv"
+      ];
+
+      let raw = null;
+      let loadedFrom = null;
+      for (const candidate of csvCandidates) {
+        const response = await fetch(candidate);
+        if (response.ok) {
+          raw = await response.text();
+          loadedFrom = candidate;
+          break;
+        }
+      }
+
+      if (!raw) {
+        throw new Error(
+          "Missing enriched CSV. Run scripts/enrich_tracks_popularity.py first to build tracks_features_with_popularity_viz.csv."
+        );
+      }
+
       const lines = raw.trim().split(/\r?\n/);
       const headers = lines[0].split(",");
 
@@ -645,42 +666,73 @@
         return out;
       }
 
-      const idxDuration = headers.indexOf("track_duration_min");
-      const idxPopularity = headers.indexOf("track_popularity");
-      const idxRelease = headers.indexOf("album_release_date");
-      const idxTrackId = headers.indexOf("track_id");
-      const idxTrackName = headers.indexOf("track_name");
-      const idxArtistName = headers.indexOf("artist_name");
+      const idxDurationMs = headers.indexOf("duration_ms");
+      const idxPopularity = headers.indexOf("spotify_popularity");
+      const idxYear = headers.indexOf("year");
+      const idxTrackId = headers.indexOf("id");
+      const idxTrackName = headers.indexOf("name");
+      const idxArtistName = headers.indexOf("artists");
+      const idxPopularitySource = headers.indexOf("popularity_source");
+
+      if ([idxDurationMs, idxPopularity, idxYear, idxTrackId, idxTrackName, idxArtistName].some(i => i < 0)) {
+        throw new Error(
+          `CSV is missing required columns. Loaded: ${loadedFrom}. Required: id,name,artists,duration_ms,year,spotify_popularity`
+        );
+      }
 
       const songs = [];
+      let proxyCount = 0;
+      let apiCount = 0;
       for (let i = 1; i < lines.length; i++) {
         const parts = splitCSV(lines[i]);
-        const duration = Number(parts[idxDuration]);
+        const durationMs = Number(parts[idxDurationMs]);
+        const duration = durationMs / 60000;
         const popularity = Number(parts[idxPopularity]);
-        const release = parts[idxRelease] || "";
-        const year = Number(release.slice(0, 4));
+        const year = Number(parts[idxYear]);
         const trackId = (parts[idxTrackId] || "").trim();
         const trackName = (parts[idxTrackName] || "").trim();
-        const artistName = (parts[idxArtistName] || "").trim();
+        const artistRaw = (parts[idxArtistName] || "").trim();
+        const sourceRaw = idxPopularitySource >= 0
+          ? (parts[idxPopularitySource] || "").trim().toLowerCase()
+          : "";
+        const artistName = artistRaw.startsWith("[")
+          ? artistRaw.replace(/[\\[\\]']/g, "").split(",").map(s => s.trim()).filter(Boolean).join(", ")
+          : artistRaw;
 
         if (!Number.isFinite(duration) || !Number.isFinite(popularity) || !Number.isFinite(year)) continue;
         if (duration <= 0 || duration > 15) continue;
         if (!/^[A-Za-z0-9]{22}$/.test(trackId)) continue;
+
+        if (sourceRaw === "proxy") proxyCount += 1;
+        if (sourceRaw === "api") apiCount += 1;
 
         songs.push({ idx: i, year, duration, popularity, trackId, trackName, artistName });
       }
 
       const currentYear = new Date().getFullYear();
       state.songs = songs.filter(d => d.year >= 2000 && d.year <= currentYear);
-      const years = state.songs.map(d => d.year);
-      state.minYear = Math.min(...years);
-      state.maxYear = Math.max(...years);
+      let minYear = Infinity;
+      let maxYear = -Infinity;
+      for (const row of state.songs) {
+        if (row.year < minYear) minYear = row.year;
+        if (row.year > maxYear) maxYear = row.year;
+      }
+      state.minYear = Number.isFinite(minYear) ? minYear : null;
+      state.maxYear = Number.isFinite(maxYear) ? maxYear : null;
+      if (proxyCount > 0 && apiCount === 0) {
+        ids.footNote.textContent =
+          "Note: Spotify API popularity was unavailable in this environment, so popularity is currently a transparent proxy score derived from audio features. Hit threshold behavior still works the same way.";
+      } else if (apiCount > 0) {
+        ids.footNote.textContent =
+          "Note: This interaction uses Spotify API popularity (0-100) where available. \"Hit\" is defined by your chosen popularity percentile in each year.";
+      }
       renderAll();
     }
 
     init().catch(err => {
       console.error(err);
-      document.body.innerHTML = "<main style='padding:20px;font-family:sans-serif;'>Failed to load CSV data. Please serve this directory with a local web server.</main>";
+      const msg = (err && err.message) ? err.message : "Unknown error while loading CSV.";
+      document.body.innerHTML = `<main style='padding:20px;font-family:sans-serif;'>Failed to load CSV data: ${msg}<br><br>Please run a local web server from this project folder and open <code>http://localhost:8000/index.html</code>.</main>`;
     });
   </script>
 </body>
