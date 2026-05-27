@@ -10,3 +10,6 @@ spotify_popularity_cache.sample.csv
 # Python cache
 __pycache__/
 *.pyc
+
+# Local secrets
+.env

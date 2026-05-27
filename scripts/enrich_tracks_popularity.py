@@ -23,8 +23,6 @@ import requests
 
 TOKEN_URL = "https://accounts.spotify.com/api/token"
 TRACKS_URL = "https://api.spotify.com/v1/tracks"
-DEFAULT_SPOTIFY_CLIENT_ID = "SPOTIFY_CLIENT_ID_REDACTED"
-DEFAULT_SPOTIFY_CLIENT_SECRET = "SPOTIFY_CLIENT_SECRET_REDACTED"
 
 
 def chunked(items: List[str], size: int) -> Iterable[List[str]]:
@@ -310,12 +308,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--cache", default="spotify_popularity_cache.csv", help="Cache CSV path")
     parser.add_argument(
         "--client-id",
-        default=os.getenv("SPOTIFY_CLIENT_ID", DEFAULT_SPOTIFY_CLIENT_ID),
+        default=os.getenv("SPOTIFY_CLIENT_ID"),
         help="Spotify client id",
     )
     parser.add_argument(
         "--client-secret",
-        default=os.getenv("SPOTIFY_CLIENT_SECRET", DEFAULT_SPOTIFY_CLIENT_SECRET),
+        default=os.getenv("SPOTIFY_CLIENT_SECRET"),
         help="Spotify client secret",
     )
     parser.add_argument("--market", default="US", help="Optional market code (default: US)")
