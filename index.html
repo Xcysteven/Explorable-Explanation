@@ -310,6 +310,33 @@
       </section>
     </section>
 
+
+    <section class="writeup panel">
+      <h2>Prototype Writeup</h2>
+
+      <div class="writeup-block">
+        <h3>1. What have you done so far?</h3>
+        <p> We assembled and cleaned a Spotify dataset containing roughly 5,200 tracks spanning 1952–2025, including fields such as track popularity, duration, artist genres, album type, and explicit content.
+           In <code>main.ipynb</code>, we performed exploratory analysis and created several initial visualizations, including a stacked area chart of genre share over time, a line chart showing the average duration of top hit songs by year,
+          and a chart comparing the proportion of albums, singles, and compilations across decades. </p>
+        <p> These visualizations helped us identify our central thesis: that popular music has become shorter and increasingly optimized around single releases in the streaming era. We then built the first interactive prototype in <code>index.html</code>, featuring a hit-threshold slider, linked chart interactions between yearly selections and song-length distributions, 
+            and an embedded Spotify player that allows users to listen to example tracks directly within the interface.</p>
+        <p> Together, these components establish the foundation for our explorable explanation about how streaming platforms may be influencing modern music trends. </p>
+      </div>
+
+      <div class="writeup-block">
+        <h3>2. What will be the most challenging part of your project to design and why?</h3>
+
+        <p>
+          The most challenging part of our project will be designing a coherent explorable narrative that connects multiple evolving music features without making the page feel like a collection of disconnected charts.
+          Variables such as danceability, energy, explicit content, acousticness, and genre trends each tell different stories, so we will need to carefully decide which interactions should be linked and how users are guided through the experience.
+          Genre classification is also challenging because Spotify artist genres are often inconsistent and highly specific, requiring us to group them into broader categories before meaningful comparisons can be made.
+          Another challenge will be translating abstract streaming concepts, such as listener retention and “skip culture,” into intuitive interactive visualizations that help explain why modern songs may be changing over time.
+        </p>
+      </div>
+    </section>
+
+
     <p class="foot">
       Note: This interaction uses observed dataset values only. "Hit" is defined operationally by your chosen popularity percentile in each year.
     </p>
