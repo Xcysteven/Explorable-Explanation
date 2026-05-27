@@ -310,6 +310,16 @@
       </section>
     </section>
 
+    <section class="panel">
+      <h2>Prototype Writeup</h2>
+      <p>
+        We assembled and cleaned Spotify track data spanning decades, then built interactive views to examine how hit songs have changed over time. The current prototype includes a linked two-chart interaction: a yearly hit-duration trend and a year-specific duration distribution view. Users can also adjust the hit threshold to test how strict or broad the definition of a \"hit\" should be, and the distribution updates instantly. This lets the audience inspect whether shortening trends are stable or sensitive to where the hit cutoff is set.
+      </p>
+      <p>
+        The most challenging design problem is turning multiple audio and industry signals into one coherent explorable story rather than a disconnected dashboard. Features like duration, energy, danceability, release strategy, and popularity each capture different dynamics, so linking interactions in an intuitive sequence is non-trivial. We also need to balance rigor with interpretability: users should understand what is measured directly versus what is modeled or proxied. The next iteration will focus on narrative scaffolding and clearer transition cues between overview trends and detailed drill-downs.
+      </p>
+    </section>
+
     <p class="foot" id="footNote">
       Note: This interaction uses observed dataset values only. "Hit" is defined operationally by your chosen Spotify popularity percentile in each year.
     </p>
