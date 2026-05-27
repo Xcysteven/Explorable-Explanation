@@ -53,7 +53,7 @@ def main() -> int:
                 d = int(float(row["duration_ms"]))
             except Exception:
                 continue
-            if y < 2000:
+            if y < 1980:
                 continue
             if d <= 0:
                 continue
@@ -90,7 +90,7 @@ def main() -> int:
         for row in kept:
             w.writerow({k: row.get(k, "") for k in fieldnames})
 
-    print(f"Input rows (>=2000): {total_before:,}")
+    print(f"Input rows: {total_before:,}")
     print(f"Output rows: {len(kept):,}")
     print(f"Wrote: {out_path}")
     return 0

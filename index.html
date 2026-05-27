@@ -710,7 +710,7 @@
       }
 
       const currentYear = new Date().getFullYear();
-      state.songs = songs.filter(d => d.year >= 2000 && d.year <= currentYear);
+      state.songs = songs.filter(d => d.year >= 1980 && d.year <= currentYear);
       let minYear = Infinity;
       let maxYear = -Infinity;
       for (const row of state.songs) {
