@@ -438,6 +438,11 @@
     </section>
 
     <section class="panel">
+      <div id="chart3" class="plot" aria-label="Explicit hit song share by year"></div>
+      <p class="caption">Chart 3: Share of yearly hits marked explicit. This uses the same hit threshold as Charts 1 and 2.</p>
+    </section>
+
+    <section class="panel">
       <h2>Prototype Writeup</h2>
       <p>
         We assembled and cleaned Spotify track data spanning decades, then built interactive views to examine how hit songs have changed over time. The current prototype includes a linked two-chart interaction: a yearly hit-duration trend and a year-specific duration distribution view. Users can also adjust the hit threshold to test how strict or broad the definition of a \"hit\" should be, and the distribution updates instantly. This lets the audience inspect whether shortening trends are stable or sensitive to where the hit cutoff is set.
@@ -467,6 +472,7 @@
     const ids = {
       chart1: document.getElementById("chart1"),
       chart2: document.getElementById("chart2"),
+      chart3: document.getElementById("chart3"),
       threshold: document.getElementById("hitThreshold"),
       thresholdValue: document.getElementById("thresholdValue"),
       selectionLabel: document.getElementById("selectionLabel"),
@@ -730,10 +736,66 @@
         : `Chart 2: Distribution of track duration for songs released in ${state.selectedYear}. Median = ${med.toFixed(2)} min.`;
     }
 
+    function renderChart3() {
+      const groups = buildYearGroups(state.songs);
+      const years = [];
+      const explicitShares = [];
+
+      for (const stat of state.yearlyStats) {
+        const rows = groups.get(stat.year) || [];
+        const hits = rows.filter(d => state.hitIndex.has(d.idx));
+        const explicitHits = hits.filter(d => d.explicit).length;
+        years.push(stat.year);
+        explicitShares.push(hits.length ? explicitHits / hits.length : 0);
+      }
+
+      const trace = {
+        type: "scatter",
+        mode: "lines+markers",
+        x: years,
+        y: explicitShares,
+        line: { color: "#d1495b", width: 2.6 },
+        marker: {
+          size: 8,
+          color: "#d1495b",
+          line: { width: 1, color: "#ffffff" }
+        },
+        hovertemplate: "Year: %{x}<br>Explicit hit share: %{y:.1%}<extra></extra>"
+      };
+
+      const layout = {
+        margin: { t: 48, r: 18, b: 55, l: 70 },
+        paper_bgcolor: "rgba(0,0,0,0)",
+        plot_bgcolor: "rgba(255,255,255,0.85)",
+        title: {
+          text: "Explicit Content Among Hit Songs",
+          font: { size: 18, family: "Space Grotesk, sans-serif" }
+        },
+        xaxis: {
+          title: "Release Year",
+          gridcolor: "rgba(31,40,51,0.08)",
+          tickmode: "linear",
+          dtick: state.maxYear && state.minYear
+            ? (state.maxYear - state.minYear > 50 ? 10 : 5)
+            : 5
+        },
+        yaxis: {
+          title: "Share of Hits",
+          tickformat: ".0%",
+          range: [0, 1],
+          gridcolor: "rgba(31,40,51,0.08)"
+        },
+        hovermode: "closest"
+      };
+
+      Plotly.react(ids.chart3, [trace], layout, { responsive: true, displayModeBar: false });
+    }
+
     function renderAll(forceNewTrack = false) {
       computeHitsAndYearStats();
       renderChart1();
       renderChart2();
+      renderChart3();
       updateAudioPanel(forceNewTrack);
     }
 
@@ -809,11 +871,12 @@
       const idxTrackId = headers.indexOf("id");
       const idxTrackName = headers.indexOf("name");
       const idxArtistName = headers.indexOf("artists");
+      const idxExplicit = headers.indexOf("explicit");
       const idxPopularitySource = headers.indexOf("popularity_source");
 
-      if ([idxDurationMs, idxPopularity, idxYear, idxTrackId, idxTrackName, idxArtistName].some(i => i < 0)) {
+      if ([idxDurationMs, idxPopularity, idxYear, idxTrackId, idxTrackName, idxArtistName, idxExplicit].some(i => i < 0)) {
         throw new Error(
-          `CSV is missing required columns. Loaded: ${loadedFrom}. Required: id,name,artists,duration_ms,year,spotify_popularity`
+          `CSV is missing required columns. Loaded: ${loadedFrom}. Required: id,name,artists,duration_ms,year,explicit,spotify_popularity`
         );
       }
 
@@ -829,6 +892,7 @@
         const trackId = (parts[idxTrackId] || "").trim();
         const trackName = (parts[idxTrackName] || "").trim();
         const artistRaw = (parts[idxArtistName] || "").trim();
+        const explicit = (parts[idxExplicit] || "").trim().toLowerCase() === "true";
         const sourceRaw = idxPopularitySource >= 0
           ? (parts[idxPopularitySource] || "").trim().toLowerCase()
           : "";
@@ -843,7 +907,7 @@
         if (sourceRaw === "proxy") proxyCount += 1;
         if (sourceRaw === "api") apiCount += 1;
 
-        songs.push({ idx: i, year, duration, popularity, trackId, trackName, artistName });
+        songs.push({ idx: i, year, duration, popularity, trackId, trackName, artistName, explicit });
       }
 
       const currentYear = new Date().getFullYear();

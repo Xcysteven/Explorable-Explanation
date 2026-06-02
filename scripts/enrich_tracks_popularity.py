@@ -245,7 +245,7 @@ def write_enriched_outputs(
         full_writer = csv.DictWriter(fout_full, fieldnames=full_fields)
         full_writer.writeheader()
 
-        viz_fields = ["id", "name", "artists", "duration_ms", "year", "spotify_popularity", "popularity_source"]
+        viz_fields = ["id", "name", "artists", "duration_ms", "year", "explicit", "spotify_popularity", "popularity_source"]
         viz_writer = csv.DictWriter(fout_viz, fieldnames=viz_fields)
         viz_writer.writeheader()
 
@@ -283,6 +283,7 @@ def write_enriched_outputs(
                     "artists": (row.get("artists") or "").strip(),
                     "duration_ms": str(duration_ms),
                     "year": str(year),
+                    "explicit": (row.get("explicit") or "").strip(),
                     "spotify_popularity": str(final_pop),
                     "popularity_source": source,
                 }
