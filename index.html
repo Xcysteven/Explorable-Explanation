@@ -148,6 +148,85 @@
       gap: 10px;
     }
 
+    .story-panel {
+      background: var(--card);
+      box-shadow: var(--shadow);
+      border-radius: 16px;
+      padding: 20px;
+      animation: rise 850ms ease-out;
+    }
+
+    .story-panel h2 {
+      margin: 0 0 10px;
+      font-size: 1.35rem;
+    }
+
+    .story-panel p {
+      margin: 0 0 12px;
+      font-family: "IBM Plex Serif", serif;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    .story-panel p:last-child {
+      margin-bottom: 0;
+    }
+
+    .comparison-grid {
+      display: grid;
+      gap: 14px;
+      grid-template-columns: 1fr;
+      margin-top: 16px;
+      margin-bottom: 20px;
+    }
+
+    .song-card {
+      border: 1px solid rgba(31, 40, 51, 0.12);
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.72);
+      padding: 18px;
+      display: grid;
+      gap: 8px;
+    }
+
+    .song-card h3 {
+      margin: 0;
+      font-size: 1.05rem;
+    }
+
+    .story-panel .song-card .song-meta {
+      margin: 0;
+      color: var(--muted);
+      font-family: "IBM Plex Serif", serif;
+      line-height: 1.4;
+    }
+
+    .story-panel .song-card .song-meta:last-child {
+      margin-top: 4px;
+      margin-bottom: 0;
+    }
+
+    .chorus-time {
+      display: inline-flex;
+      width: fit-content;
+      margin-top: 2px;
+      border-radius: 999px;
+      background: rgba(209, 73, 91, 0.12);
+      color: #982a3a;
+      padding: 5px 9px;
+      font-weight: 700;
+      font-size: 0.9rem;
+    }
+
+    .song-card iframe {
+      border: 0;
+      width: 100%;
+      height: 152px;
+      margin-top: 6px;
+      border-radius: 12px;
+      background: #fff;
+    }
+
     .audio-head {
       display: flex;
       align-items: center;
@@ -209,6 +288,15 @@
       line-height: 1.4;
     }
 
+    .chart-note {
+      margin: 0;
+      padding: 8px 10px 0;
+      font-family: "IBM Plex Serif", serif;
+      color: var(--muted);
+      font-size: 0.95rem;
+      line-height: 1.4;
+    }
+
     .plot {
       width: 100%;
       height: 400px;
@@ -247,6 +335,10 @@
         grid-template-columns: 1fr 1fr;
         align-items: start;
       }
+
+      .comparison-grid {
+        grid-template-columns: 1fr 1fr;
+      }
     }
   </style>
 </head>
@@ -254,8 +346,43 @@
   <main class="wrap">
     <section class="title">
       <h1>The Streamlined Era: Hit Duration Trends</h1>
-      <p class="subtitle">
-        Click a year in Chart 1 to inspect that year in Chart 2. Without a selection, Chart 2 shows the global baseline distribution of all songs.
+    </section>
+
+    <section class="story-panel">
+      <p>
+        A hit song used to have room to unfold. It could open slowly, build toward a chorus, and ask listeners to stay with it. But in the streaming era, every second has become measurable: a skip, a save, a replay, a playlist add, or a lost listener. When platforms reward songs that hold attention quickly, the structure of popular music may begin to change too.
+      </p>
+      <p>
+        This explorable explanation investigates that shift by asking a simple question: are modern hits becoming shorter because the economics of listening have changed? Instead of treating song length as just an artistic choice, we examine it as part of a larger feedback loop between artists, listeners, and streaming platforms.
+      </p>
+      <div class="comparison-grid">
+        <article class="song-card">
+          <h3>Billie Jean</h3>
+          <p class="song-meta">Michael Jackson, 1982</p>
+          <span class="chorus-time">Chorus arrives around 1:27</span>
+          <iframe
+            title="Spotify embed: Billie Jean"
+            src="https://open.spotify.com/embed/track/5ChkMS8OtdzJeqyybCc9R5?utm_source=generator"
+            loading="lazy"
+            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+          ></iframe>
+          <p class="song-meta">The song spends more than a minute establishing groove, bassline, and tension before the central hook arrives.</p>
+        </article>
+        <article class="song-card">
+          <h3>Die With A Smile</h3>
+          <p class="song-meta">Lady Gaga &amp; Bruno Mars, 2024</p>
+          <span class="chorus-time">Chorus arrives around 0:45</span>
+          <iframe
+            title="Spotify embed: Die With A Smile"
+            src="https://open.spotify.com/embed/track/2plbrEY59IikOBgBGLjaoe?utm_source=generator"
+            loading="lazy"
+            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+          ></iframe>
+          <p class="song-meta">The emotional payoff arrives in under a minute, giving listeners the song's most memorable section much earlier.</p>
+        </article>
+      </div>
+      <p>
+        These two songs are not proof by themselves. They are listening examples that make the larger question easier to hear: has the architecture of hit songs compressed over time? The charts below move from anecdote to data by letting you adjust what counts as a hit, click through years, and compare each year's duration pattern against the wider Spotify catalog.
       </p>
     </section>
 
