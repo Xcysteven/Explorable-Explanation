@@ -83,7 +83,7 @@ def main() -> int:
         kept.extend(core)
         kept.extend(sampled_rest)
 
-    fieldnames = ["id", "name", "artists", "duration_ms", "year", "spotify_popularity", "popularity_source"]
+    fieldnames = ["id", "name", "artists", "duration_ms", "year", "explicit", "spotify_popularity", "popularity_source"]
     with out_path.open("w", encoding="utf-8", newline="") as f:
         w = csv.DictWriter(f, fieldnames=fieldnames)
         w.writeheader()
