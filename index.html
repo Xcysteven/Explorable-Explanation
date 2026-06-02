@@ -161,6 +161,21 @@
       font-size: 1.35rem;
     }
 
+    .chapter-label {
+      margin: 0 0 6px;
+      color: var(--accent-b);
+      font-family: "Space Grotesk", sans-serif;
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .story-panel .chapter-label {
+      color: var(--accent-b);
+      font-family: "Space Grotesk", sans-serif;
+    }
+
     .story-panel p {
       margin: 0 0 12px;
       font-family: "IBM Plex Serif", serif;
@@ -170,6 +185,55 @@
 
     .story-panel p:last-child {
       margin-bottom: 0;
+    }
+
+    .story-question {
+      border-left: 4px solid var(--accent-a);
+      padding: 10px 0 10px 14px;
+      background: linear-gradient(90deg, rgba(209, 73, 91, 0.1), transparent);
+      border-radius: 10px;
+      font-family: "Space Grotesk", sans-serif;
+      font-size: clamp(1.1rem, 2vw, 1.35rem);
+      font-weight: 700;
+      color: var(--ink);
+    }
+
+    .era-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .era-card {
+      min-height: 100%;
+      border: 1px solid rgba(31, 40, 51, 0.12);
+      border-left: 4px solid var(--accent-b);
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.72);
+      padding: 14px;
+    }
+
+    .era-card.milestone {
+      border-left-color: var(--accent-a);
+      background: linear-gradient(135deg, rgba(209, 73, 91, 0.1), rgba(255, 255, 255, 0.78));
+    }
+
+    .era-card h3 {
+      margin: 0 0 8px;
+      font-size: 1rem;
+    }
+
+    .story-panel .era-card p {
+      margin: 0;
+      font-size: 0.95rem;
+    }
+
+    .evidence-panel {
+      border: 1px solid rgba(47, 125, 140, 0.18);
+      background:
+        linear-gradient(135deg, rgba(47, 125, 140, 0.12), transparent 34%),
+        var(--card);
     }
 
     .comparison-grid {
@@ -339,6 +403,10 @@
       .comparison-grid {
         grid-template-columns: 1fr 1fr;
       }
+
+      .era-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
     }
   </style>
 </head>
@@ -349,6 +417,7 @@
     </section>
 
     <section class="story-panel">
+      <div class="chapter-label">Chapter 1 · Hear The Shift</div>
       <p>
         A hit song used to have room to unfold. It could open slowly, build toward a chorus, and ask listeners to stay with it. But in the streaming era, every second has become measurable: a skip, a save, a replay, a playlist add, or a lost listener. When platforms reward songs that hold attention quickly, the structure of popular music may begin to change too.
       </p>
@@ -383,6 +452,47 @@
       </div>
       <p>
         These two songs are not proof by themselves. They are listening examples that make the larger question easier to hear: has the architecture of hit songs compressed over time? The charts below move from anecdote to data by letting you adjust what counts as a hit, click through years, and compare each year's duration pattern against the wider Spotify catalog.
+      </p>
+    </section>
+
+    <section class="story-panel">
+      <div class="chapter-label">Chapter 2 · The Journey Of The Hit Song</div>
+      <h2>From albums and radio to personalized feeds</h2>
+      <p>
+        The story is not just that songs got shorter. The bigger shift is that the environment around music changed. A hit in the album and radio era had to survive DJs, physical releases, and long-form listening habits. A hit in the streaming era has to survive a listener who can skip instantly and a platform that measures every reaction.
+      </p>
+      <div class="era-grid">
+        <article class="era-card">
+          <h3>1980s-1990s: Album and radio logic</h3>
+          <p>Songs could spend more time setting up mood, groove, and narrative because listening was often tied to albums, radio blocks, and physical ownership.</p>
+        </article>
+        <article class="era-card">
+          <h3>2000s-early 2010s: Digital transition</h3>
+          <p>Downloads, iPods, and early streaming made individual tracks easier to access, but discovery was still less personalized than today's feed-like platforms.</p>
+        </article>
+        <article class="era-card milestone">
+          <h3>2015 onward: Personalized platform logic</h3>
+          <p>Spotify's 2015 launch of Discover Weekly made algorithmic personalization more visible, turning listening history into a discovery engine.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="story-panel">
+      <div class="chapter-label">Chapter 3 · The Turning Point</div>
+      <h2>Why does modern music feel different?</h2>
+      <p class="story-question">
+        If Spotify becomes more personalized around 2015, do popular songs start behaving differently after that point?
+      </p>
+      <p>
+        This project treats 2015 as a narrative checkpoint, not as a single cause that explains everything. The useful question is whether the data shows a pattern that lines up with the platform shift: shorter hit durations, different content signals, and a music economy where attention is measured in seconds.
+      </p>
+    </section>
+
+    <section class="story-panel evidence-panel">
+      <div class="chapter-label">Chapter 4 · Put The Claim Against The Data</div>
+      <h2>The evidence: duration and explicit content</h2>
+      <p>
+        The charts below return from listening examples to dataset evidence. Chart 1 tracks the average duration of yearly hits. Chart 2 lets you click any year and compare that year's song-length distribution against its hits. Chart 3 adds another signal by showing the share of hits marked explicit. The dotted 2015 marker is there to help you compare the platform story against the observed trend.
       </p>
     </section>
 
@@ -445,10 +555,10 @@
     <section class="panel">
       <h2>Prototype Writeup</h2>
       <p>
-        We assembled and cleaned Spotify track data spanning decades, then built interactive views to examine how hit songs have changed over time. The current prototype includes a linked two-chart interaction: a yearly hit-duration trend and a year-specific duration distribution view. Users can also adjust the hit threshold to test how strict or broad the definition of a \"hit\" should be, and the distribution updates instantly. This lets the audience inspect whether shortening trends are stable or sensitive to where the hit cutoff is set.
+        We assembled and cleaned Spotify track data spanning decades, then built the page as a chapter-based explorable explanation rather than a standalone dashboard. The prototype now begins with two listening examples, moves through a short history of how music discovery changed, and then uses charts to test whether the story appears in the data. Users can adjust the hit threshold to test how strict or broad the definition of a \"hit\" should be, click a year to inspect its distribution, and compare the duration trend against explicit-content changes. This lets the audience inspect whether the shortening pattern is stable or sensitive to where the hit cutoff is set.
       </p>
       <p>
-        The most challenging design problem is turning multiple audio and industry signals into one coherent explorable story rather than a disconnected dashboard. Features like duration, energy, danceability, release strategy, and popularity each capture different dynamics, so linking interactions in an intuitive sequence is non-trivial. We also need to balance rigor with interpretability: users should understand what is measured directly versus what is modeled or proxied. The next iteration will focus on narrative scaffolding and clearer transition cues between overview trends and detailed drill-downs.
+        The most challenging design problem is balancing narrative clarity with evidence. The 2015 Spotify milestone gives the project a compelling turning point, but it should be framed as context rather than proof of direct causation. Features like duration, explicitness, energy, danceability, release strategy, and popularity each capture different dynamics, so the final project needs to guide users through them without implying that one metric explains everything. The next iteration can expand the chapter structure by adding more feature-change views while keeping the current duration and explicit-content charts as the core evidence.
       </p>
     </section>
 
@@ -555,6 +665,41 @@
       return getScopedSongs().filter(d => state.hitIndex.has(d.idx));
     }
 
+    function platformMilestone() {
+      return {
+        shapes: [{
+          type: "line",
+          xref: "x",
+          yref: "paper",
+          x0: 2015,
+          x1: 2015,
+          y0: 0,
+          y1: 1,
+          line: { color: "rgba(209, 73, 91, 0.72)", width: 2, dash: "dot" }
+        }],
+        annotations: [{
+          x: 2015,
+          y: 0.98,
+          xref: "x",
+          yref: "paper",
+          text: "2015: personalized discovery",
+          showarrow: false,
+          xanchor: "left",
+          yanchor: "top",
+          xshift: 8,
+          bgcolor: "rgba(255,255,255,0.85)",
+          bordercolor: "rgba(209, 73, 91, 0.35)",
+          borderwidth: 1,
+          borderpad: 4,
+          font: {
+            size: 11,
+            color: "#982a3a",
+            family: "Space Grotesk, sans-serif"
+          }
+        }]
+      };
+    }
+
     function updateAudioPanel(forceNew = false) {
       const hitSongs = getScopedHitSongs();
       if (!hitSongs.length) {
@@ -593,6 +738,7 @@
     function renderChart1() {
       const years = state.yearlyStats.map(d => d.year);
       const values = state.yearlyStats.map(d => d.meanHitDuration);
+      const milestone = platformMilestone();
 
       const lineTrace = {
         type: "scatter",
@@ -623,6 +769,9 @@
         xaxis: {
           title: "Release Year",
           gridcolor: "rgba(31,40,51,0.08)",
+          range: state.minYear && state.maxYear
+            ? [state.minYear - 0.5, state.maxYear + 0.5]
+            : undefined,
           tickmode: "linear",
           dtick: state.maxYear && state.minYear
             ? (state.maxYear - state.minYear > 50 ? 10 : 5)
@@ -632,6 +781,8 @@
           title: "Average Hit Duration (minutes)",
           gridcolor: "rgba(31,40,51,0.08)"
         },
+        shapes: milestone.shapes,
+        annotations: milestone.annotations,
         hovermode: "closest"
       };
 
@@ -740,6 +891,7 @@
       const groups = buildYearGroups(state.songs);
       const years = [];
       const explicitShares = [];
+      const milestone = platformMilestone();
 
       for (const stat of state.yearlyStats) {
         const rows = groups.get(stat.year) || [];
@@ -774,6 +926,9 @@
         xaxis: {
           title: "Release Year",
           gridcolor: "rgba(31,40,51,0.08)",
+          range: state.minYear && state.maxYear
+            ? [state.minYear - 0.5, state.maxYear + 0.5]
+            : undefined,
           tickmode: "linear",
           dtick: state.maxYear && state.minYear
             ? (state.maxYear - state.minYear > 50 ? 10 : 5)
@@ -785,6 +940,8 @@
           range: [0, 1],
           gridcolor: "rgba(31,40,51,0.08)"
         },
+        shapes: milestone.shapes,
+        annotations: milestone.annotations,
         hovermode: "closest"
       };
 
