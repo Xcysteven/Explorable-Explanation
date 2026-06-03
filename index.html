@@ -24,6 +24,10 @@
       box-sizing: border-box;
     }
 
+    html {
+      scroll-behavior: smooth;
+    }
+
     body {
       margin: 0;
       min-height: 100vh;
@@ -41,29 +45,6 @@
       margin: 0 auto;
       display: grid;
       gap: 14px;
-    }
-
-    .title {
-      padding: 20px;
-      border-radius: 16px;
-      background: var(--card);
-      box-shadow: var(--shadow);
-      animation: rise 700ms ease-out;
-    }
-
-    h1 {
-      margin: 0 0 8px;
-      line-height: 1.15;
-      font-size: clamp(1.5rem, 3vw, 2.2rem);
-      letter-spacing: 0.01em;
-    }
-
-    .subtitle {
-      margin: 0;
-      font-family: "IBM Plex Serif", serif;
-      color: var(--muted);
-      line-height: 1.45;
-      font-size: 1rem;
     }
 
     .controls {
@@ -188,9 +169,8 @@
     }
 
     .story-question {
-      border-left: 4px solid var(--accent-a);
-      padding: 10px 0 10px 14px;
-      background: linear-gradient(90deg, rgba(209, 73, 91, 0.1), transparent);
+      padding: 14px 18px;
+      background: rgba(209, 73, 91, 0.1);
       border-radius: 10px;
       font-family: "Space Grotesk", sans-serif;
       font-size: clamp(1.1rem, 2vw, 1.35rem);
@@ -234,6 +214,230 @@
       background:
         linear-gradient(135deg, rgba(47, 125, 140, 0.12), transparent 34%),
         var(--card);
+    }
+
+    .opening-scene {
+      background:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.92), rgba(245, 242, 234, 0.78)),
+        var(--card);
+    }
+
+    .opening-kicker {
+      margin: 0 0 6px;
+      color: var(--accent-a);
+      font-family: "Space Grotesk", sans-serif;
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .evidence-writeup {
+      background: rgba(255, 255, 255, 0.9);
+      box-shadow: var(--shadow);
+      border-radius: 16px;
+      padding: 22px;
+      display: grid;
+      gap: 16px;
+      animation: rise 900ms ease-out;
+    }
+
+    .evidence-writeup h2 {
+      margin: 0;
+      font-size: clamp(1.5rem, 2.4vw, 2rem);
+      line-height: 1.2;
+    }
+
+    .evidence-writeup p {
+      margin: 0;
+      color: var(--muted);
+      font-family: "IBM Plex Serif", serif;
+      line-height: 1.55;
+    }
+
+    .evidence-points {
+      display: grid;
+      gap: 12px;
+    }
+
+    .evidence-point {
+      padding: 14px;
+      border-left: 4px solid var(--accent-b);
+      border-radius: 8px;
+      background: rgba(47, 125, 140, 0.08);
+    }
+
+    .evidence-point:nth-child(2) {
+      border-left-color: var(--accent-a);
+      background: rgba(209, 73, 91, 0.08);
+    }
+
+    .evidence-point h3 {
+      margin: 0 0 6px;
+      font-size: 1rem;
+    }
+
+    .chapter-scroll {
+      width: 100vw;
+      margin: 4px calc(50% - 50vw) 0;
+      animation: rise 900ms ease-out;
+    }
+
+    .chapter-copy {
+      display: grid;
+      gap: 0;
+    }
+
+    .chapter-step {
+      min-height: 88svh;
+      display: grid;
+      place-items: center;
+      position: relative;
+      overflow: hidden;
+      isolation: isolate;
+      padding: clamp(56px, 10vw, 120px) 22px;
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.58)),
+        transparent;
+      opacity: 0.48;
+      transform: translateY(24px) scale(0.99);
+      transition:
+        opacity 700ms ease,
+        transform 800ms cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+
+    .chapter-step::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      background: radial-gradient(circle at center, rgba(255, 255, 255, 0.76), rgba(255, 255, 255, 0.36) 48%, rgba(255, 255, 255, 0.1));
+      pointer-events: none;
+    }
+
+    .chapter-step:nth-child(even) {
+      background: rgba(255, 255, 255, 0.36);
+    }
+
+    .chapter-step.is-active {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+
+    .chapter-project-title {
+      margin: 0 auto 10px;
+      color: var(--ink);
+      font-size: clamp(1rem, 1.6vw, 1.35rem);
+      font-weight: 700;
+    }
+
+    .chapter-project-subtitle {
+      margin: 0 auto 34px;
+      color: var(--muted);
+      font-family: "IBM Plex Serif", serif;
+      font-size: clamp(1rem, 1.4vw, 1.18rem);
+      line-height: 1.45;
+    }
+
+    .chapter-bg-viz {
+      position: absolute;
+      inset: 7% 5%;
+      z-index: 0;
+      width: 90%;
+      height: 86%;
+      opacity: 0.28;
+      pointer-events: none;
+    }
+
+    .chapter-bg-viz text {
+      font-family: "Space Grotesk", sans-serif;
+      fill: rgba(31, 40, 51, 0.72);
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .chapter-bg-viz .bg-axis {
+      stroke: rgba(31, 40, 51, 0.22);
+      stroke-width: 2;
+    }
+
+    .chapter-bg-viz .bg-bar {
+      fill: rgba(47, 125, 140, 0.32);
+      transform-box: fill-box;
+      transform-origin: bottom;
+    }
+
+    .chapter-bg-viz .bg-line {
+      fill: none;
+      stroke: rgba(47, 125, 140, 0.7);
+      stroke-width: 9;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .chapter-bg-viz .bg-line.accent {
+      stroke: rgba(209, 73, 91, 0.7);
+    }
+
+    .chapter-bg-viz .bg-dot {
+      fill: rgba(209, 73, 91, 0.58);
+      stroke: rgba(255, 255, 255, 0.8);
+      stroke-width: 4;
+      transform-box: fill-box;
+      transform-origin: center;
+    }
+
+    .chapter-bg-viz .bg-marker {
+      stroke: rgba(152, 42, 58, 0.75);
+      stroke-width: 5;
+      stroke-dasharray: 16 12;
+    }
+
+    .chapter-bg-viz .draw-line {
+      stroke-dasharray: var(--path-length, 1);
+      stroke-dashoffset: var(--path-length, 1);
+    }
+
+    .chapter-step.is-active .chapter-bg-viz .draw-line {
+      animation: drawPath 1600ms ease forwards;
+    }
+
+    .chapter-step.is-active .chapter-bg-viz .bg-bar {
+      animation: riseBar 900ms ease both;
+      animation-delay: var(--bar-delay, 0ms);
+    }
+
+    .chapter-step.is-active .chapter-bg-viz .bg-dot {
+      animation: pulseDot 1400ms ease both;
+      animation-delay: var(--dot-delay, 0ms);
+    }
+
+    .chapter-text {
+      position: relative;
+      z-index: 2;
+      max-width: 780px;
+      margin-left: auto;
+      margin-right: auto;
+      text-align: center;
+    }
+
+    .chapter-text h2 {
+      margin: 0 auto 18px;
+      font-size: clamp(2.3rem, 5vw, 4.6rem);
+      line-height: 1.15;
+    }
+
+    .chapter-text p {
+      margin: 0 auto 18px;
+      color: var(--muted);
+      font-family: "IBM Plex Serif", serif;
+      font-size: clamp(1.16rem, 2vw, 1.55rem);
+      line-height: 1.6;
+    }
+
+    .chapter-text p:last-child {
+      margin-bottom: 0;
     }
 
     .comparison-grid {
@@ -384,6 +588,32 @@
       }
     }
 
+    @keyframes drawPath {
+      to {
+        stroke-dashoffset: 0;
+      }
+    }
+
+    @keyframes riseBar {
+      from {
+        transform: scaleY(0);
+      }
+      to {
+        transform: scaleY(1);
+      }
+    }
+
+    @keyframes pulseDot {
+      from {
+        opacity: 0;
+        transform: scale(0.72);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
     @media (max-width: 680px) {
       body {
         padding: 16px 10px 28px;
@@ -391,6 +621,28 @@
 
       .plot {
         height: 330px;
+      }
+
+      .chapter-step {
+        min-height: 82svh;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html {
+        scroll-behavior: auto;
+      }
+
+      .chapter-step {
+        opacity: 1;
+        transform: none;
+        transition: none;
+      }
+
+      .chapter-step.is-active .chapter-bg-viz .draw-line,
+      .chapter-step.is-active .chapter-bg-viz .bg-bar,
+      .chapter-step.is-active .chapter-bg-viz .bg-dot {
+        animation: none;
       }
     }
 
@@ -407,22 +659,58 @@
       .era-grid {
         grid-template-columns: repeat(3, 1fr);
       }
+
+      .evidence-points {
+        grid-template-columns: 1fr 1fr;
+      }
     }
   </style>
 </head>
 <body>
   <main class="wrap">
-    <section class="title">
-      <h1>The Streamlined Era: Hit Duration Trends</h1>
+    <section class="chapter-scroll" id="chapterStory" aria-label="Scrollable chapter story">
+      <div class="chapter-copy">
+        <article class="chapter-step">
+          <svg class="chapter-bg-viz" data-chapter-viz="album" aria-hidden="true"></svg>
+          <div class="chapter-text">
+            <p class="chapter-project-title">The Streamlined Era</p>
+            <p class="chapter-project-subtitle">A story about how streaming changed the shape of hit songs.</p>
+            <h2>1980-1999: hits had more room to unfold.</h2>
+            <p>
+              In the album and radio era, popular music lived inside slower systems: physical releases, radio programming, album sequencing, and fewer instant exits. That environment did not force every song to be long, but it gave many hits more permission to build gradually.
+            </p>
+          </div>
+        </article>
+
+        <article class="chapter-step">
+          <svg class="chapter-bg-viz" data-chapter-viz="digital" aria-hidden="true"></svg>
+          <div class="chapter-text">
+            <h2>2000-2014: tracks become easier to separate from albums.</h2>
+            <p>
+              Downloads, iPods, and early streaming changed the unit of listening. Songs became easier to search, save, shuffle, and skip. The album still mattered, but the individual track was becoming the main object moving through the music economy.
+            </p>
+          </div>
+        </article>
+
+        <article class="chapter-step">
+          <svg class="chapter-bg-viz" data-chapter-viz="platform" aria-hidden="true"></svg>
+          <div class="chapter-text">
+            <h2>2015 becomes the narrative checkpoint.</h2>
+            <p class="story-question">
+              If Spotify becomes more personalized around 2015, do popular songs start behaving differently after that point?
+            </p>
+            <p>
+              This project treats 2015 as context, not proof of causation. The useful question is whether shorter hit durations and explicit-content changes line up with the platform shift.
+            </p>
+          </div>
+        </article>
+      </div>
     </section>
 
-    <section class="story-panel">
-      <div class="chapter-label">Chapter 1 · Hear The Shift</div>
+    <section class="story-panel opening-scene">
+      <div class="opening-kicker">Comparison · Hear The Shift</div>
       <p>
-        A hit song used to have room to unfold. It could open slowly, build toward a chorus, and ask listeners to stay with it. But in the streaming era, every second has become measurable: a skip, a save, a replay, a playlist add, or a lost listener. When platforms reward songs that hold attention quickly, the structure of popular music may begin to change too.
-      </p>
-      <p>
-        This explorable explanation investigates that shift by asking a simple question: are modern hits becoming shorter because the economics of listening have changed? Instead of treating song length as just an artistic choice, we examine it as part of a larger feedback loop between artists, listeners, and streaming platforms.
+        Before the charts ask you to measure anything, listen for the difference. An older hit can take its time building a world around the song. A newer hit often has to make its emotional promise sooner, because the listener can leave at any second.
       </p>
       <div class="comparison-grid">
         <article class="song-card">
@@ -451,48 +739,7 @@
         </article>
       </div>
       <p>
-        These two songs are not proof by themselves. They are listening examples that make the larger question easier to hear: has the architecture of hit songs compressed over time? The charts below move from anecdote to data by letting you adjust what counts as a hit, click through years, and compare each year's duration pattern against the wider Spotify catalog.
-      </p>
-    </section>
-
-    <section class="story-panel">
-      <div class="chapter-label">Chapter 2 · The Journey Of The Hit Song</div>
-      <h2>From albums and radio to personalized feeds</h2>
-      <p>
-        The story is not just that songs got shorter. The bigger shift is that the environment around music changed. A hit in the album and radio era had to survive DJs, physical releases, and long-form listening habits. A hit in the streaming era has to survive a listener who can skip instantly and a platform that measures every reaction.
-      </p>
-      <div class="era-grid">
-        <article class="era-card">
-          <h3>1980s-1990s: Album and radio logic</h3>
-          <p>Songs could spend more time setting up mood, groove, and narrative because listening was often tied to albums, radio blocks, and physical ownership.</p>
-        </article>
-        <article class="era-card">
-          <h3>2000s-early 2010s: Digital transition</h3>
-          <p>Downloads, iPods, and early streaming made individual tracks easier to access, but discovery was still less personalized than today's feed-like platforms.</p>
-        </article>
-        <article class="era-card milestone">
-          <h3>2015 onward: Personalized platform logic</h3>
-          <p>Spotify's 2015 launch of Discover Weekly made algorithmic personalization more visible, turning listening history into a discovery engine.</p>
-        </article>
-      </div>
-    </section>
-
-    <section class="story-panel">
-      <div class="chapter-label">Chapter 3 · The Turning Point</div>
-      <h2>Why does modern music feel different?</h2>
-      <p class="story-question">
-        If Spotify becomes more personalized around 2015, do popular songs start behaving differently after that point?
-      </p>
-      <p>
-        This project treats 2015 as a narrative checkpoint, not as a single cause that explains everything. The useful question is whether the data shows a pattern that lines up with the platform shift: shorter hit durations, different content signals, and a music economy where attention is measured in seconds.
-      </p>
-    </section>
-
-    <section class="story-panel evidence-panel">
-      <div class="chapter-label">Chapter 4 · Put The Claim Against The Data</div>
-      <h2>The evidence: duration and explicit content</h2>
-      <p>
-        The charts below return from listening examples to dataset evidence. Chart 1 tracks the average duration of yearly hits. Chart 2 lets you click any year and compare that year's song-length distribution against its hits. Chart 3 adds another signal by showing the share of hits marked explicit. The dotted 2015 marker is there to help you compare the platform story against the observed trend.
+        These two songs are not proof by themselves. They are listening examples that make the larger question easier to hear: has the architecture of hit songs compressed over time?
       </p>
     </section>
 
@@ -550,6 +797,31 @@
     <section class="panel">
       <div id="chart3" class="plot" aria-label="Explicit hit song share by year"></div>
       <p class="caption">Chart 3: Share of yearly hits marked explicit. This uses the same hit threshold as Charts 1 and 2.</p>
+    </section>
+
+    <section class="evidence-writeup">
+      <div class="opening-kicker">What The Data Starts To Suggest</div>
+      <h2>The clearest shift appears after the mid-2010s.</h2>
+      <p>
+        The duration trend does not move in a perfectly straight line. Earlier decades bounce up and down, and there are individual years where hit songs get longer again. But once the graph reaches the late 2010s, the overall direction becomes harder to ignore: average hit duration drops noticeably, especially after the 2015 checkpoint used in this story.
+      </p>
+      <div class="evidence-points">
+        <article class="evidence-point">
+          <h3>Duration: a downward turn</h3>
+          <p>
+            In the early part of the timeline, hit-song length often sits closer to the upper range of the graph. After 2015, the line begins moving lower, and by the final years in the dataset the average hit duration is much shorter than most of the 1980s, 1990s, and early 2000s. That pattern supports the idea that modern hits are becoming more compressed.
+          </p>
+        </article>
+        <article class="evidence-point">
+          <h3>Explicit content: a rising signal</h3>
+          <p>
+            The explicit-content chart moves in the opposite direction. It stays relatively low for much of the earlier timeline, then climbs more sharply in the later years. This does not prove Spotify caused the change, but it shows that the post-2015 hit landscape is changing in more than one way: songs are getting shorter while explicit hits become more common.
+          </p>
+        </article>
+      </div>
+      <p>
+        The slider matters because it lets you test whether this story only works for the very top songs or still appears when the definition of a hit becomes broader. If the same direction remains visible across different thresholds, the pattern is more convincing.
+      </p>
     </section>
 
     <section class="panel">
@@ -948,8 +1220,165 @@
       Plotly.react(ids.chart3, [trace], layout, { responsive: true, displayModeBar: false });
     }
 
+    function renderChapterBackdrops() {
+      const svgs = document.querySelectorAll(".chapter-bg-viz");
+      if (!svgs.length || !state.yearlyStats.length) return;
+
+      const groups = buildYearGroups(state.songs);
+      const explicitByYear = new Map();
+      for (const stat of state.yearlyStats) {
+        const rows = groups.get(stat.year) || [];
+        const hits = rows.filter(d => state.hitIndex.has(d.idx));
+        explicitByYear.set(
+          stat.year,
+          hits.length ? hits.filter(d => d.explicit).length / hits.length : 0
+        );
+      }
+
+      const durationValues = state.yearlyStats.map(d => d.meanHitDuration).filter(Number.isFinite);
+      const yMin = Math.min(...durationValues) - 0.12;
+      const yMax = Math.max(...durationValues) + 0.12;
+      const svgNS = "http://www.w3.org/2000/svg";
+
+      function xScale(year, range) {
+        return 90 + ((year - range[0]) / (range[1] - range[0])) * 820;
+      }
+
+      function yScale(value, min, max) {
+        return 430 - ((value - min) / (max - min)) * 300;
+      }
+
+      function addEl(svg, tag, attrs = {}) {
+        const el = document.createElementNS(svgNS, tag);
+        for (const [key, value] of Object.entries(attrs)) {
+          el.setAttribute(key, value);
+        }
+        svg.appendChild(el);
+        return el;
+      }
+
+      function linePath(rows, range, accessor, min, max) {
+        return rows
+          .map((row, index) => {
+            const x = xScale(row.year, range);
+            const y = yScale(accessor(row), min, max);
+            return `${index === 0 ? "M" : "L"} ${x.toFixed(1)} ${y.toFixed(1)}`;
+          })
+          .join(" ");
+      }
+
+      function finishLineAnimation(path) {
+        const length = path.getTotalLength();
+        path.style.setProperty("--path-length", length);
+      }
+
+      function drawFrame(svg, label) {
+        svg.innerHTML = "";
+        svg.setAttribute("viewBox", "0 0 1000 520");
+        svg.setAttribute("preserveAspectRatio", "xMidYMid meet");
+        addEl(svg, "line", { class: "bg-axis", x1: 90, y1: 430, x2: 910, y2: 430 });
+        addEl(svg, "text", { x: 92, y: 70, "font-size": 24 }).textContent = label;
+      }
+
+      function renderAlbum(svg) {
+        const range = [1980, 1999];
+        const rows = state.yearlyStats.filter(d => d.year >= range[0] && d.year <= range[1]);
+        drawFrame(svg, "Average hit duration, 1980-1999");
+        const barWidth = Math.max(10, 780 / rows.length);
+
+        rows.forEach((row, index) => {
+          const x = xScale(row.year, range) - barWidth / 2;
+          const y = yScale(row.meanHitDuration, yMin, yMax);
+          const height = 430 - y;
+          addEl(svg, "rect", {
+            class: "bg-bar",
+            x: x.toFixed(1),
+            y: y.toFixed(1),
+            width: (barWidth * 0.72).toFixed(1),
+            height: height.toFixed(1),
+            style: `--bar-delay:${index * 28}ms`
+          });
+        });
+
+        addEl(svg, "text", { x: 90, y: 468, "font-size": 20 }).textContent = "1980";
+        addEl(svg, "text", { x: 842, y: 468, "font-size": 20 }).textContent = "1999";
+      }
+
+      function renderDigital(svg) {
+        const range = [2000, 2014];
+        const rows = state.yearlyStats.filter(d => d.year >= range[0] && d.year <= range[1]);
+        drawFrame(svg, "Average hit duration, 2000-2014");
+        const path = addEl(svg, "path", {
+          class: "bg-line draw-line",
+          d: linePath(rows, range, d => d.meanHitDuration, yMin, yMax)
+        });
+        finishLineAnimation(path);
+
+        rows.forEach((row, index) => {
+          addEl(svg, "circle", {
+            class: "bg-dot",
+            cx: xScale(row.year, range).toFixed(1),
+            cy: yScale(row.meanHitDuration, yMin, yMax).toFixed(1),
+            r: 11,
+            style: `--dot-delay:${index * 38}ms`
+          });
+        });
+
+        addEl(svg, "text", { x: 90, y: 468, "font-size": 20 }).textContent = "2000";
+        addEl(svg, "text", { x: 842, y: 468, "font-size": 20 }).textContent = "2014";
+      }
+
+      function renderPlatform(svg) {
+        const range = [2015, 2020];
+        const rows = state.yearlyStats.filter(d => d.year >= range[0] && d.year <= range[1]);
+        drawFrame(svg, "Duration falls, explicit share rises");
+
+        addEl(svg, "line", {
+          class: "bg-marker",
+          x1: xScale(2015, range),
+          y1: 94,
+          x2: xScale(2015, range),
+          y2: 430
+        });
+        addEl(svg, "text", { x: xScale(2015, range) + 18, y: 124, "font-size": 24 }).textContent = "2015";
+
+        const durationPath = addEl(svg, "path", {
+          class: "bg-line draw-line",
+          d: linePath(rows, range, d => d.meanHitDuration, yMin, yMax)
+        });
+        finishLineAnimation(durationPath);
+
+        const explicitPath = addEl(svg, "path", {
+          class: "bg-line accent draw-line",
+          d: linePath(rows, range, d => explicitByYear.get(d.year) || 0, 0, 0.55)
+        });
+        finishLineAnimation(explicitPath);
+
+        rows.forEach((row, index) => {
+          addEl(svg, "circle", {
+            class: "bg-dot",
+            cx: xScale(row.year, range).toFixed(1),
+            cy: yScale(explicitByYear.get(row.year) || 0, 0, 0.55).toFixed(1),
+            r: 10,
+            style: `--dot-delay:${index * 55}ms`
+          });
+        });
+
+        addEl(svg, "text", { x: 660, y: 104, "font-size": 18 }).textContent = "explicit share";
+        addEl(svg, "text", { x: 660, y: 138, "font-size": 18 }).textContent = "duration";
+      }
+
+      svgs.forEach(svg => {
+        const type = svg.dataset.chapterViz;
+        if (type === "album") renderAlbum(svg);
+        if (type === "digital") renderDigital(svg);
+        if (type === "platform") renderPlatform(svg);
+      });
+    }
+
     function renderAll(forceNewTrack = false) {
       computeHitsAndYearStats();
+      renderChapterBackdrops();
       renderChart1();
       renderChart2();
       renderChart3();
@@ -970,6 +1399,33 @@
     ids.randomTrackBtn.addEventListener("click", () => {
       updateAudioPanel(true);
     });
+
+    function setupChapterStageAnimation() {
+      const steps = [...document.querySelectorAll(".chapter-step")];
+      if (!steps.length) return;
+
+      function activateStep(activeStep) {
+        steps.forEach(step => {
+          step.classList.toggle("is-active", step === activeStep);
+        });
+      }
+
+      activateStep(steps[0]);
+
+      const observer = new IntersectionObserver(entries => {
+        const activeEntry = entries
+          .filter(entry => entry.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+        if (activeEntry && activeEntry.intersectionRatio >= 0.42) {
+          activateStep(activeEntry.target);
+        }
+      }, {
+        threshold: [0.32, 0.42, 0.55, 0.7],
+        rootMargin: "-18% 0px -18% 0px"
+      });
+
+      steps.forEach(step => observer.observe(step));
+    }
 
     async function init() {
       const csvCandidates = [
@@ -1086,6 +1542,8 @@
       }
       renderAll();
     }
+
+    setupChapterStageAnimation();
 
     init().catch(err => {
       console.error(err);
