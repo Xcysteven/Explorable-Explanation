@@ -7,6 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=IBM+Plex+Serif:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
   <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
   <style>
     :root {
@@ -275,6 +276,212 @@
     .evidence-point h3 {
       margin: 0 0 6px;
       font-size: 1rem;
+    }
+
+    .feature-explorer {
+      padding: 22px;
+      display: grid;
+      gap: 16px;
+    }
+
+    .feature-explorer h2 {
+      margin: 0;
+      font-size: clamp(1.45rem, 2.4vw, 2rem);
+      line-height: 1.2;
+    }
+
+    .feature-intro {
+      margin: 0;
+      max-width: 860px;
+      color: var(--muted);
+      font-family: "IBM Plex Serif", serif;
+      line-height: 1.55;
+    }
+
+    .feature-tabs {
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+      scrollbar-width: thin;
+    }
+
+    .feature-tab {
+      min-width: 158px;
+      border: 1px solid rgba(31, 40, 51, 0.12);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.76);
+      color: var(--ink);
+      padding: 8px 12px;
+      text-align: left;
+      white-space: nowrap;
+    }
+
+    .feature-tab strong,
+    .feature-tab span {
+      display: block;
+    }
+
+    .feature-tab strong {
+      font-size: 0.9rem;
+      line-height: 1.1;
+    }
+
+    .feature-tab span {
+      margin-top: 2px;
+      color: var(--muted);
+      font-size: 0.72rem;
+      font-weight: 500;
+    }
+
+    .feature-tab.is-active {
+      background: var(--ink);
+      color: #fff;
+      box-shadow: 0 10px 22px rgba(31, 40, 51, 0.18);
+    }
+
+    .feature-tab.is-active span {
+      color: rgba(255, 255, 255, 0.72);
+    }
+
+    .feature-summary {
+      margin: 0;
+      padding: 12px 14px;
+      border-left: 4px solid var(--accent-a);
+      border-radius: 8px;
+      background: rgba(209, 73, 91, 0.08);
+      color: var(--muted);
+      font-family: "IBM Plex Serif", serif;
+      line-height: 1.55;
+    }
+
+    .d3-feature-chart {
+      position: relative;
+      min-height: 420px;
+      border: 1px solid rgba(31, 40, 51, 0.08);
+      border-radius: 14px;
+      background:
+        linear-gradient(90deg, rgba(47, 125, 140, 0.06), transparent 48%, rgba(209, 73, 91, 0.06)),
+        rgba(255, 255, 255, 0.72);
+      overflow: hidden;
+    }
+
+    .d3-feature-chart svg {
+      display: block;
+      width: 100%;
+      height: 420px;
+    }
+
+    .d3-feature-chart .axis path,
+    .d3-feature-chart .axis line {
+      stroke: rgba(31, 40, 51, 0.22);
+    }
+
+    .d3-feature-chart .axis text {
+      fill: var(--muted);
+      font-family: "Space Grotesk", sans-serif;
+      font-size: 12px;
+    }
+
+    .d3-feature-chart .grid line {
+      stroke: rgba(31, 40, 51, 0.08);
+      stroke-width: 1;
+    }
+
+    .d3-feature-chart .grid path {
+      display: none;
+    }
+
+    .feature-chart-title,
+    .feature-axis-label,
+    .feature-region-label,
+    .feature-legend {
+      fill: var(--ink);
+      font-family: "Space Grotesk", sans-serif;
+    }
+
+    .feature-chart-title {
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .feature-axis-label {
+      fill: var(--muted);
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .feature-region-label {
+      fill: rgba(31, 40, 51, 0.42);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .feature-legend {
+      fill: var(--muted);
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .feature-line-all {
+      fill: none;
+      stroke: rgba(47, 125, 140, 0.48);
+      stroke-width: 3;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .feature-line-hit {
+      fill: none;
+      stroke: var(--accent-a);
+      stroke-width: 4;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      filter: drop-shadow(0 6px 8px rgba(209, 73, 91, 0.18));
+    }
+
+    .feature-dot {
+      fill: var(--accent-a);
+      stroke: #fff;
+      stroke-width: 2;
+      cursor: pointer;
+      transition: r 160ms ease, opacity 160ms ease;
+    }
+
+    .feature-dot:hover {
+      r: 7;
+    }
+
+    .feature-focus-line {
+      stroke: rgba(31, 40, 51, 0.28);
+      stroke-width: 1.5;
+      stroke-dasharray: 5 5;
+      pointer-events: none;
+    }
+
+    .feature-tooltip {
+      position: absolute;
+      z-index: 5;
+      max-width: 230px;
+      padding: 9px 10px;
+      border: 1px solid rgba(31, 40, 51, 0.12);
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.96);
+      box-shadow: 0 12px 24px rgba(31, 40, 51, 0.14);
+      color: var(--ink);
+      font-size: 0.84rem;
+      line-height: 1.35;
+      pointer-events: none;
+      opacity: 0;
+      transform: translateY(6px);
+      transition: opacity 140ms ease, transform 140ms ease;
+    }
+
+    .feature-tooltip.is-visible {
+      opacity: 1;
+      transform: translateY(0);
     }
 
     .chapter-scroll {
@@ -824,6 +1031,20 @@
       </p>
     </section>
 
+    <section class="panel feature-explorer">
+      <div class="opening-kicker">Feature Explorer · Test The Sound</div>
+      <h2>Song length is only one part of the shift.</h2>
+      <p class="feature-intro">
+        Use the tabs to inspect one musical feature at a time. The chart compares yearly hits against the broader catalog, using the same hit threshold as the duration graphs above.
+      </p>
+      <div class="feature-tabs" id="featureTabs" aria-label="Choose a music feature"></div>
+      <p class="feature-summary" id="featureSummary"></p>
+      <div id="featureChart" class="d3-feature-chart" aria-label="Selected feature trend by year">
+        <div class="feature-tooltip" id="featureTooltip" role="status" aria-live="polite"></div>
+      </div>
+      <p class="caption" id="featureCaption">Feature explorer: choose a tab to compare how hit songs and the wider catalog changed over time.</p>
+    </section>
+
     <section class="panel">
       <h2>Prototype Writeup</h2>
       <p>
@@ -847,6 +1068,7 @@
       hitIndex: new Set(),
       yearlyStats: [],
       activeTrack: null,
+      activeFeature: "duration",
       minYear: null,
       maxYear: null
     };
@@ -866,7 +1088,86 @@
       spotifyLink: document.getElementById("spotifyLink"),
       spotifyEmbed: document.getElementById("spotifyEmbed"),
       randomTrackBtn: document.getElementById("randomTrackBtn"),
+      featureTabs: document.getElementById("featureTabs"),
+      featureChart: document.getElementById("featureChart"),
+      featureSummary: document.getElementById("featureSummary"),
+      featureCaption: document.getElementById("featureCaption"),
       footNote: document.getElementById("footNote")
+    };
+
+    const FEATURE_CONFIG = {
+      duration: {
+        label: "Duration",
+        teaser: "shorter after 2015",
+        yTitle: "Average Duration (minutes)",
+        title: "Average Track Duration",
+        units: "min",
+        tickformat: undefined,
+        valueFormat: value => `${value.toFixed(2)} min`,
+        read: song => song.duration,
+        summary:
+          "Duration is the structural feature at the center of the project: it measures whether hits are becoming more compressed over time."
+      },
+      explicit: {
+        label: "Explicitness",
+        teaser: "rising in recent hits",
+        yTitle: "Share Marked Explicit",
+        title: "Explicit Track Share",
+        units: "",
+        tickformat: ".0%",
+        valueFormat: value => `${(value * 100).toFixed(1)}%`,
+        read: song => song.explicit ? 1 : 0,
+        summary:
+          "Explicitness shows whether the hit landscape is changing culturally as well as structurally."
+      },
+      danceability: {
+        label: "Danceability",
+        teaser: "built for movement",
+        yTitle: "Average Danceability",
+        title: "Danceability Trend",
+        units: "",
+        tickformat: ".2f",
+        valueFormat: value => value.toFixed(2),
+        read: song => song.features.danceability,
+        summary:
+          "Danceability estimates how suitable a track is for dancing, based on rhythm stability, beat strength, and tempo."
+      },
+      energy: {
+        label: "Energy",
+        teaser: "tests intensity",
+        yTitle: "Average Energy",
+        title: "Energy Trend",
+        units: "",
+        tickformat: ".2f",
+        valueFormat: value => value.toFixed(2),
+        read: song => song.features.energy,
+        summary:
+          "Energy estimates intensity and activity, so it helps test whether modern hits feel more forceful or urgent."
+      },
+      acousticness: {
+        label: "Acousticness",
+        teaser: "less unplugged sound",
+        yTitle: "Average Acousticness",
+        title: "Acousticness Trend",
+        units: "",
+        tickformat: ".2f",
+        valueFormat: value => value.toFixed(2),
+        read: song => song.features.acousticness,
+        summary:
+          "Acousticness estimates whether a track sounds acoustic, which can hint at production changes across eras."
+      },
+      valence: {
+        label: "Valence",
+        teaser: "tracks musical mood",
+        yTitle: "Average Valence",
+        title: "Valence Trend",
+        units: "",
+        tickformat: ".2f",
+        valueFormat: value => value.toFixed(2),
+        read: song => song.features.valence,
+        summary:
+          "Valence estimates musical positivity. Lower values tend to sound darker, while higher values tend to sound brighter."
+      }
     };
 
     function quantile(sortedArr, q) {
@@ -1220,6 +1521,333 @@
       Plotly.react(ids.chart3, [trace], layout, { responsive: true, displayModeBar: false });
     }
 
+    function featureAverage(rows, config) {
+      const values = rows
+        .map(config.read)
+        .filter(value => Number.isFinite(value));
+      return mean(values);
+    }
+
+    function summarizeFeature(values, config) {
+      const before = values.filter(d => d.year < 2015 && Number.isFinite(d.hitValue));
+      const after = values.filter(d => d.year >= 2015 && Number.isFinite(d.hitValue));
+      const beforeMean = mean(before.map(d => d.hitValue));
+      const afterMean = mean(after.map(d => d.hitValue));
+
+      if (!Number.isFinite(beforeMean) || !Number.isFinite(afterMean)) {
+        return config.summary;
+      }
+
+      const delta = afterMean - beforeMean;
+      const direction = Math.abs(delta) < 0.005
+        ? "stays relatively close to"
+        : delta > 0
+          ? "moves above"
+          : "moves below";
+
+      return `${config.summary} In this dataset, the post-2015 hit average ${direction} the pre-2015 average (${config.valueFormat(beforeMean)} before 2015 vs. ${config.valueFormat(afterMean)} after 2015).`;
+    }
+
+    function renderFeatureTabs() {
+      if (!ids.featureTabs) return;
+      ids.featureTabs.innerHTML = "";
+
+      Object.entries(FEATURE_CONFIG).forEach(([key, config]) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = `feature-tab${key === state.activeFeature ? " is-active" : ""}`;
+        button.dataset.feature = key;
+        button.innerHTML = `<strong>${config.label}</strong><span>${config.teaser}</span>`;
+        button.addEventListener("click", () => {
+          state.activeFeature = key;
+          renderFeatureExplorer();
+          renderFeatureTabs();
+        });
+        ids.featureTabs.appendChild(button);
+      });
+    }
+
+    function renderFeatureExplorer() {
+      if (!ids.featureChart) return;
+
+      const config = FEATURE_CONFIG[state.activeFeature] || FEATURE_CONFIG.duration;
+      const groups = buildYearGroups(state.songs);
+      const values = [];
+
+      for (const stat of state.yearlyStats) {
+        const rows = groups.get(stat.year) || [];
+        const hits = rows.filter(d => state.hitIndex.has(d.idx));
+        values.push({
+          year: stat.year,
+          allValue: featureAverage(rows, config),
+          hitValue: featureAverage(hits, config)
+        });
+      }
+
+      const finiteHitValues = values.filter(d => Number.isFinite(d.hitValue));
+      const finiteAllValues = values.filter(d => Number.isFinite(d.allValue));
+
+      if (!finiteHitValues.length) {
+        ids.featureSummary.textContent = "This feature is not available in the currently loaded CSV.";
+        ids.featureCaption.textContent = "Feature explorer: rebuild the compact CSV with audio-feature columns to enable this chart.";
+        d3.select(ids.featureChart)
+          .selectAll("svg")
+          .data([null])
+          .join("svg")
+          .attr("viewBox", "0 0 900 420")
+          .selectAll("text")
+          .data(["No feature data available"])
+          .join("text")
+          .attr("x", 450)
+          .attr("y", 210)
+          .attr("text-anchor", "middle")
+          .attr("class", "feature-chart-title")
+          .text(d => d);
+        return;
+      }
+
+      const yValues = [...finiteAllValues.map(d => d.allValue), ...finiteHitValues.map(d => d.hitValue)];
+      const yMin = Math.min(...yValues);
+      const yMax = Math.max(...yValues);
+      const isBounded = state.activeFeature !== "duration";
+      const yRange = isBounded
+        ? [Math.max(0, yMin - 0.04), Math.min(1, yMax + 0.04)]
+        : [Math.max(0, yMin - 0.15), yMax + 0.15];
+
+      ids.featureSummary.textContent = summarizeFeature(values, config);
+      ids.featureCaption.textContent = `Feature explorer: ${config.label.toLowerCase()} trend for yearly hits compared with the wider catalog.`;
+
+      const width = Math.max(720, ids.featureChart.clientWidth || 900);
+      const height = 420;
+      const margin = { top: 58, right: 34, bottom: 58, left: 72 };
+      const innerWidth = width - margin.left - margin.right;
+      const innerHeight = height - margin.top - margin.bottom;
+      const minYear = state.minYear || d3.min(values, d => d.year);
+      const maxYear = state.maxYear || d3.max(values, d => d.year);
+
+      const svg = d3.select(ids.featureChart)
+        .selectAll("svg")
+        .data([null])
+        .join("svg")
+        .attr("viewBox", `0 0 ${width} ${height}`)
+        .attr("role", "img");
+
+      svg.selectAll("*").remove();
+
+      const x = d3.scaleLinear()
+        .domain([minYear - 0.5, maxYear + 0.5])
+        .range([margin.left, margin.left + innerWidth]);
+
+      const y = d3.scaleLinear()
+        .domain(yRange)
+        .nice()
+        .range([margin.top + innerHeight, margin.top]);
+
+      const lineAll = d3.line()
+        .defined(d => Number.isFinite(d.allValue))
+        .x(d => x(d.year))
+        .y(d => y(d.allValue))
+        .curve(d3.curveMonotoneX);
+
+      const lineHits = d3.line()
+        .defined(d => Number.isFinite(d.hitValue))
+        .x(d => x(d.year))
+        .y(d => y(d.hitValue))
+        .curve(d3.curveMonotoneX);
+
+      svg.append("rect")
+        .attr("x", margin.left)
+        .attr("y", margin.top)
+        .attr("width", Math.max(0, x(2015) - margin.left))
+        .attr("height", innerHeight)
+        .attr("fill", "rgba(47, 125, 140, 0.06)");
+
+      svg.append("rect")
+        .attr("x", x(2015))
+        .attr("y", margin.top)
+        .attr("width", Math.max(0, margin.left + innerWidth - x(2015)))
+        .attr("height", innerHeight)
+        .attr("fill", "rgba(209, 73, 91, 0.06)");
+
+      svg.append("g")
+        .attr("class", "grid")
+        .attr("transform", `translate(${margin.left},0)`)
+        .call(d3.axisLeft(y)
+          .ticks(5)
+          .tickSize(-innerWidth)
+          .tickFormat(""));
+
+      svg.append("g")
+        .attr("class", "axis")
+        .attr("transform", `translate(0,${margin.top + innerHeight})`)
+        .call(d3.axisBottom(x).ticks(Math.min(8, Math.ceil((maxYear - minYear) / 5))).tickFormat(d3.format("d")));
+
+      svg.append("g")
+        .attr("class", "axis")
+        .attr("transform", `translate(${margin.left},0)`)
+        .call(d3.axisLeft(y).ticks(5).tickFormat(config.tickformat === ".0%" ? d3.format(".0%") : undefined));
+
+      svg.append("text")
+        .attr("class", "feature-chart-title")
+        .attr("x", margin.left)
+        .attr("y", 30)
+        .text(config.title);
+
+      svg.append("text")
+        .attr("class", "feature-axis-label")
+        .attr("x", margin.left + innerWidth / 2)
+        .attr("y", height - 15)
+        .attr("text-anchor", "middle")
+        .text("Release Year");
+
+      svg.append("text")
+        .attr("class", "feature-axis-label")
+        .attr("transform", `translate(18,${margin.top + innerHeight / 2}) rotate(-90)`)
+        .attr("text-anchor", "middle")
+        .text(config.yTitle);
+
+      svg.append("text")
+        .attr("class", "feature-region-label")
+        .attr("x", margin.left + 8)
+        .attr("y", margin.top + 20)
+        .text("Before 2015");
+
+      svg.append("text")
+        .attr("class", "feature-region-label")
+        .attr("x", x(2015) + 12)
+        .attr("y", margin.top + 20)
+        .text("After 2015");
+
+      svg.append("line")
+        .attr("x1", x(2015))
+        .attr("x2", x(2015))
+        .attr("y1", margin.top)
+        .attr("y2", margin.top + innerHeight)
+        .attr("stroke", "rgba(152, 42, 58, 0.72)")
+        .attr("stroke-width", 2)
+        .attr("stroke-dasharray", "5 5");
+
+      svg.append("text")
+        .attr("class", "feature-legend")
+        .attr("x", margin.left + innerWidth - 205)
+        .attr("y", 30)
+        .text("All Songs");
+
+      svg.append("text")
+        .attr("class", "feature-legend")
+        .attr("x", margin.left + innerWidth - 96)
+        .attr("y", 30)
+        .text(`Hits Top ${state.hitPercent}%`);
+
+      svg.append("line")
+        .attr("x1", margin.left + innerWidth - 232)
+        .attr("x2", margin.left + innerWidth - 212)
+        .attr("y1", 26)
+        .attr("y2", 26)
+        .attr("stroke", "rgba(47, 125, 140, 0.48)")
+        .attr("stroke-width", 3);
+
+      svg.append("line")
+        .attr("x1", margin.left + innerWidth - 124)
+        .attr("x2", margin.left + innerWidth - 104)
+        .attr("y1", 26)
+        .attr("y2", 26)
+        .attr("stroke", "#d1495b")
+        .attr("stroke-width", 4);
+
+      const pathAll = svg.append("path")
+        .datum(values)
+        .attr("class", "feature-line-all")
+        .attr("d", lineAll);
+
+      const pathHits = svg.append("path")
+        .datum(values)
+        .attr("class", "feature-line-hit")
+        .attr("d", lineHits);
+
+      [pathAll, pathHits].forEach(path => {
+        const length = path.node().getTotalLength();
+        path
+          .attr("stroke-dasharray", `${length} ${length}`)
+          .attr("stroke-dashoffset", length)
+          .transition()
+          .duration(1100)
+          .ease(d3.easeCubicOut)
+          .attr("stroke-dashoffset", 0);
+      });
+
+      svg.append("g")
+        .selectAll("circle")
+        .data(finiteHitValues)
+        .join("circle")
+        .attr("class", "feature-dot")
+        .attr("cx", d => x(d.year))
+        .attr("cy", d => y(d.hitValue))
+        .attr("r", 0)
+        .transition()
+        .delay((d, i) => 320 + i * 18)
+        .duration(360)
+        .ease(d3.easeBackOut.overshoot(1.6))
+        .attr("r", 4.5);
+
+      const focusLine = svg.append("line")
+        .attr("class", "feature-focus-line")
+        .attr("y1", margin.top)
+        .attr("y2", margin.top + innerHeight)
+        .style("opacity", 0);
+
+      const focusDot = svg.append("circle")
+        .attr("r", 7)
+        .attr("fill", "#d1495b")
+        .attr("stroke", "#fff")
+        .attr("stroke-width", 2)
+        .style("opacity", 0);
+
+      const tooltip = d3.select("#featureTooltip");
+      const bisectYear = d3.bisector(d => d.year).center;
+
+      svg.append("rect")
+        .attr("x", margin.left)
+        .attr("y", margin.top)
+        .attr("width", innerWidth)
+        .attr("height", innerHeight)
+        .attr("fill", "transparent")
+        .on("mousemove", event => {
+          const [mx] = d3.pointer(event);
+          const year = Math.round(x.invert(mx));
+          const nearestIndex = bisectYear(finiteHitValues, year);
+          const d = finiteHitValues[Math.max(0, Math.min(finiteHitValues.length - 1, nearestIndex))];
+          const matchingAll = values.find(row => row.year === d.year);
+          const px = x(d.year);
+          const py = y(d.hitValue);
+
+          focusLine
+            .attr("x1", px)
+            .attr("x2", px)
+            .style("opacity", 1);
+
+          focusDot
+            .attr("cx", px)
+            .attr("cy", py)
+            .style("opacity", 1);
+
+          tooltip
+            .classed("is-visible", true)
+            .style("left", `${Math.min(width - 245, Math.max(12, px + 16))}px`)
+            .style("top", `${Math.max(12, py - 28)}px`)
+            .html(
+              `<strong>${d.year}</strong><br>` +
+              `Hits: ${config.valueFormat(d.hitValue)}<br>` +
+              `All songs: ${matchingAll && Number.isFinite(matchingAll.allValue) ? config.valueFormat(matchingAll.allValue) : "n/a"}`
+            );
+        })
+        .on("mouseleave", () => {
+          focusLine.style("opacity", 0);
+          focusDot.style("opacity", 0);
+          tooltip.classed("is-visible", false);
+        });
+    }
+
     function renderChapterBackdrops() {
       const svgs = document.querySelectorAll(".chapter-bg-viz");
       if (!svgs.length || !state.yearlyStats.length) return;
@@ -1382,6 +2010,7 @@
       renderChart1();
       renderChart2();
       renderChart3();
+      renderFeatureExplorer();
       updateAudioPanel(forceNewTrack);
     }
 
@@ -1401,16 +2030,38 @@
     });
 
     function setupChapterStageAnimation() {
-      const steps = [...document.querySelectorAll(".chapter-step")];
-      if (!steps.length) return;
+      const stepNodes = [...document.querySelectorAll(".chapter-step")];
+      const steps = d3.selectAll(".chapter-step");
+      if (!stepNodes.length || steps.empty()) return;
 
       function activateStep(activeStep) {
-        steps.forEach(step => {
-          step.classList.toggle("is-active", step === activeStep);
-        });
+        steps
+          .classed("is-active", function () {
+            return this === activeStep;
+          })
+          .transition()
+          .duration(700)
+          .ease(d3.easeCubicOut)
+          .style("opacity", function () {
+            return this === activeStep ? 1 : 0.48;
+          })
+          .style("transform", function () {
+            return this === activeStep ? "translateY(0) scale(1)" : "translateY(24px) scale(0.99)";
+          });
+
+        steps.select(".chapter-text")
+          .transition()
+          .duration(760)
+          .ease(d3.easeCubicOut)
+          .style("opacity", function () {
+            return this.closest(".chapter-step") === activeStep ? 1 : 0.72;
+          })
+          .style("transform", function () {
+            return this.closest(".chapter-step") === activeStep ? "translateY(0)" : "translateY(12px)";
+          });
       }
 
-      activateStep(steps[0]);
+      activateStep(stepNodes[0]);
 
       const observer = new IntersectionObserver(entries => {
         const activeEntry = entries
@@ -1424,7 +2075,7 @@
         rootMargin: "-18% 0px -18% 0px"
       });
 
-      steps.forEach(step => observer.observe(step));
+      stepNodes.forEach(step => observer.observe(step));
     }
 
     async function init() {
@@ -1486,11 +2137,21 @@
       const idxArtistName = headers.indexOf("artists");
       const idxExplicit = headers.indexOf("explicit");
       const idxPopularitySource = headers.indexOf("popularity_source");
+      const idxDanceability = headers.indexOf("danceability");
+      const idxEnergy = headers.indexOf("energy");
+      const idxAcousticness = headers.indexOf("acousticness");
+      const idxValence = headers.indexOf("valence");
 
       if ([idxDurationMs, idxPopularity, idxYear, idxTrackId, idxTrackName, idxArtistName, idxExplicit].some(i => i < 0)) {
         throw new Error(
           `CSV is missing required columns. Loaded: ${loadedFrom}. Required: id,name,artists,duration_ms,year,explicit,spotify_popularity`
         );
+      }
+
+      function parseOptionalNumber(parts, index) {
+        if (index < 0) return null;
+        const value = Number(parts[index]);
+        return Number.isFinite(value) ? value : null;
       }
 
       const songs = [];
@@ -1520,7 +2181,22 @@
         if (sourceRaw === "proxy") proxyCount += 1;
         if (sourceRaw === "api") apiCount += 1;
 
-        songs.push({ idx: i, year, duration, popularity, trackId, trackName, artistName, explicit });
+        songs.push({
+          idx: i,
+          year,
+          duration,
+          popularity,
+          trackId,
+          trackName,
+          artistName,
+          explicit,
+          features: {
+            danceability: parseOptionalNumber(parts, idxDanceability),
+            energy: parseOptionalNumber(parts, idxEnergy),
+            acousticness: parseOptionalNumber(parts, idxAcousticness),
+            valence: parseOptionalNumber(parts, idxValence)
+          }
+        });
       }
 
       const currentYear = new Date().getFullYear();
@@ -1543,6 +2219,7 @@
       renderAll();
     }
 
+    renderFeatureTabs();
     setupChapterStageAnimation();
 
     init().catch(err => {
