@@ -358,11 +358,9 @@
     .d3-feature-chart {
       position: relative;
       min-height: 420px;
-      border: 1px solid rgba(31, 40, 51, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.1);
       border-radius: 14px;
-      background:
-        linear-gradient(90deg, rgba(47, 125, 140, 0.06), transparent 48%, rgba(209, 73, 91, 0.06)),
-        rgba(255, 255, 255, 0.72);
+      background: transparent;
       overflow: hidden;
     }
 
@@ -374,17 +372,18 @@
 
     .d3-feature-chart .axis path,
     .d3-feature-chart .axis line {
-      stroke: rgba(31, 40, 51, 0.22);
+      stroke: #3f3f46;
     }
 
     .d3-feature-chart .axis text {
-      fill: var(--muted);
+      fill: #a1a1aa;
       font-family: "Space Grotesk", sans-serif;
       font-size: 12px;
     }
 
     .d3-feature-chart .grid line {
-      stroke: rgba(31, 40, 51, 0.08);
+      stroke: #3f3f46;
+      opacity: 0.42;
       stroke-width: 1;
     }
 
@@ -396,7 +395,7 @@
     .feature-axis-label,
     .feature-region-label,
     .feature-legend {
-      fill: var(--ink);
+      fill: #ffffff;
       font-family: "Space Grotesk", sans-serif;
     }
 
@@ -406,13 +405,13 @@
     }
 
     .feature-axis-label {
-      fill: var(--muted);
+      fill: #a1a1aa;
       font-size: 12px;
       font-weight: 600;
     }
 
     .feature-region-label {
-      fill: rgba(31, 40, 51, 0.42);
+      fill: #a1a1aa;
       font-size: 11px;
       font-weight: 700;
       letter-spacing: 0.08em;
@@ -420,14 +419,15 @@
     }
 
     .feature-legend {
-      fill: var(--muted);
+      fill: #a1a1aa;
       font-size: 12px;
       font-weight: 600;
     }
 
     .feature-line-all {
       fill: none;
-      stroke: rgba(47, 125, 140, 0.48);
+      stroke: #38bdf8;
+      opacity: 0.5;
       stroke-width: 3;
       stroke-linecap: round;
       stroke-linejoin: round;
@@ -435,15 +435,15 @@
 
     .feature-line-hit {
       fill: none;
-      stroke: var(--accent-a);
+      stroke: #a78bfa;
       stroke-width: 4;
       stroke-linecap: round;
       stroke-linejoin: round;
-      filter: drop-shadow(0 6px 8px rgba(209, 73, 91, 0.18));
+      filter: drop-shadow(0 6px 8px rgba(167, 139, 250, 0.24));
     }
 
     .feature-dot {
-      fill: var(--accent-a);
+      fill: #a78bfa;
       stroke: #fff;
       stroke-width: 2;
       cursor: pointer;
@@ -810,6 +810,195 @@
       overflow: hidden;
     }
 
+    #slide-era-1 {
+      background: #0a0a1a;
+    }
+
+    #slide-era-2 {
+      background: #0f0a00;
+    }
+
+    #slide-era-3 {
+      background: #00100a;
+    }
+
+    #slide-comparison {
+      background: #111118;
+      color: #d4d4d8;
+    }
+
+    #slide-thesis {
+      background: #0d0d0d;
+    }
+
+    #slide-charts {
+      background: #111118;
+    }
+
+    #slide-features {
+      background: #0d0d0d;
+    }
+
+    #slide-summary {
+      background: #0a0a0a;
+    }
+
+    #slide-search {
+      background: #111118;
+    }
+
+    #slide-era-1,
+    #slide-era-2,
+    #slide-era-3,
+    #slide-comparison,
+    #slide-thesis,
+    #slide-charts,
+    #slide-features,
+    #slide-summary,
+    #slide-search {
+      color: #d4d4d8;
+    }
+
+    #slide-era-1 h1,
+    #slide-era-1 h2,
+    #slide-era-1 h3,
+    #slide-era-2 h1,
+    #slide-era-2 h2,
+    #slide-era-2 h3,
+    #slide-era-3 h1,
+    #slide-era-3 h2,
+    #slide-era-3 h3,
+    #slide-comparison h1,
+    #slide-comparison h2,
+    #slide-comparison h3,
+    #slide-thesis h1,
+    #slide-thesis h2,
+    #slide-thesis h3,
+    #slide-charts h1,
+    #slide-charts h2,
+    #slide-charts h3,
+    #slide-features h1,
+    #slide-features h2,
+    #slide-features h3,
+    #slide-summary h1,
+    #slide-summary h2,
+    #slide-summary h3,
+    #slide-search h1,
+    #slide-search h2,
+    #slide-search h3 {
+      color: #ffffff;
+    }
+
+    #slide-era-1 p,
+    #slide-era-2 p,
+    #slide-era-3 p,
+    #slide-comparison p,
+    #slide-thesis p,
+    #slide-charts p,
+    #slide-features p,
+    #slide-summary p,
+    #slide-search p {
+      color: #d4d4d8;
+    }
+
+    #slide-charts .caption,
+    #slide-comparison .opening-kicker,
+    #slide-charts .audio-meta,
+    #slide-charts .foot,
+    #slide-features .caption,
+    #slide-features .feature-intro,
+    #slide-summary .opening-kicker,
+    #slide-search .opening-kicker,
+    #slide-search .foot,
+    #slide-search .muted {
+      color: #a1a1aa;
+    }
+
+    #slide-charts .panel,
+    #slide-charts .controls,
+    #slide-charts .audio-panel,
+    #slide-charts .evidence-writeup,
+    #slide-features .panel,
+    #slide-summary .summary-card,
+    #slide-search .selected-song-card,
+    #slide-search .radar-card,
+    #slide-search .prototype-details,
+    #slide-search .compact-chart-card {
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.06);
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.28);
+      color: #d4d4d8;
+    }
+
+    #slide-charts .chip,
+    #slide-charts input[type="range"] {
+      color: #ffffff;
+    }
+
+    #slide-charts .chip {
+      border-color: rgba(255, 255, 255, 0.12);
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    #slide-comparison .comparison-split::before {
+      background: rgba(255, 255, 255, 0.16);
+    }
+
+    #slide-comparison .comparison-year {
+      color: rgba(255, 255, 255, 0.24);
+    }
+
+    #slide-comparison .comparison-year.accent {
+      color: rgba(248, 113, 113, 0.42);
+    }
+
+    #slide-comparison .comparison-column p,
+    #slide-comparison .comparison-quote {
+      color: #d4d4d8;
+    }
+
+    #slide-comparison .timeline-bar {
+      background: rgba(255, 255, 255, 0.14);
+    }
+
+    #slide-comparison .timeline-bar::after {
+      background: #f87171;
+    }
+
+    #slide-comparison .timeline-marker {
+      color: #fca5a5;
+    }
+
+    #slide-charts .evidence-point,
+    #slide-features .feature-summary {
+      border-left-color: #a78bfa;
+      background: rgba(167, 139, 250, 0.1);
+    }
+
+    #slide-charts .evidence-point:nth-child(2) {
+      border-left-color: #f87171;
+      background: rgba(248, 113, 113, 0.1);
+    }
+
+    #slide-features .feature-tab {
+      border-color: rgba(255, 255, 255, 0.14);
+      background: rgba(255, 255, 255, 0.07);
+      color: #ffffff;
+    }
+
+    #slide-features .feature-tab span {
+      color: #a1a1aa;
+    }
+
+    #slide-features .feature-tab.is-active {
+      background: #ffffff;
+      color: #0d0d0d;
+    }
+
+    #slide-features .feature-tab.is-active span {
+      color: #52525b;
+    }
+
     .slide-scroll-inner {
       height: 100vh;
       overflow-y: auto;
@@ -832,15 +1021,17 @@
       width: 11px;
       height: 11px;
       padding: 0;
-      border: 1px solid rgba(255, 255, 255, 0.72);
+      border: 1px solid #ffffff;
       border-radius: 999px;
-      background: rgba(31, 40, 51, 0.18);
-      box-shadow: 0 0 0 1px rgba(31, 40, 51, 0.12);
+      background: #ffffff;
+      opacity: 0.25;
+      box-shadow: none;
     }
 
     .dot-nav button.is-active {
-      background: var(--accent-a);
-      border-color: var(--accent-a);
+      background: #ffffff;
+      border-color: #ffffff;
+      opacity: 1;
     }
 
     .slide-content {
@@ -859,21 +1050,15 @@
     }
 
     .era-one {
-      background:
-        radial-gradient(circle at 20% 20%, rgba(47, 125, 140, 0.22), transparent 32%),
-        #0a0a1a;
+      background: #0a0a1a;
     }
 
     .era-two {
-      background:
-        radial-gradient(circle at 72% 24%, rgba(209, 135, 73, 0.2), transparent 34%),
-        #0f0a00;
+      background: #0f0a00;
     }
 
     .era-three {
-      background:
-        radial-gradient(circle at 35% 20%, rgba(47, 125, 140, 0.2), transparent 32%),
-        #00100a;
+      background: #00100a;
     }
 
     .era-label {
@@ -966,7 +1151,6 @@
     .feature-slide,
     .summary-slide {
       padding: 28px max(18px, calc((100vw - 1180px) / 2));
-      background: #fafafa;
       display: grid;
       align-items: center;
     }
@@ -1076,10 +1260,7 @@
       display: grid;
       place-items: center;
       color: #fff;
-      background:
-        radial-gradient(circle at 25% 24%, rgba(47, 125, 140, 0.22), transparent 34%),
-        radial-gradient(circle at 78% 72%, rgba(209, 73, 91, 0.2), transparent 32%),
-        #0b1018;
+      background: #0d0d0d;
     }
 
     .thesis-content h1 {
@@ -1104,11 +1285,11 @@
     }
 
     .thesis-line.teal {
-      color: #73c2cf;
+      color: #38bdf8;
     }
 
     .thesis-line.rose {
-      color: #e36b7a;
+      color: #f87171;
     }
 
     .thesis-hint {
@@ -1128,10 +1309,7 @@
     }
 
     .charts-slide {
-      background:
-        radial-gradient(circle at 10% 10%, rgba(209, 73, 91, 0.12), transparent 30%),
-        radial-gradient(circle at 85% 20%, rgba(47, 125, 140, 0.16), transparent 35%),
-        linear-gradient(135deg, var(--bg-1), var(--bg-2));
+      background: #111118;
     }
 
     .keep-scrolling {
@@ -1164,9 +1342,7 @@
     }
 
     .summary-slide {
-      background:
-        radial-gradient(circle at 80% 18%, rgba(47, 125, 140, 0.16), transparent 32%),
-        #f7f4ec;
+      background: #0a0a0a;
     }
 
     .summary-grid {
@@ -1223,9 +1399,7 @@
     }
 
     .search-slide {
-      background:
-        radial-gradient(circle at 20% 10%, rgba(47, 125, 140, 0.2), transparent 34%),
-        #080b12;
+      background: #111118;
       color: #fff;
       overflow-y: auto;
       padding: 48px max(18px, calc((100vw - 1100px) / 2));
@@ -1528,7 +1702,7 @@
   <nav class="dot-nav" id="dotNav" aria-label="Slide navigation"></nav>
 
   <main id="slides-container">
-    <section class="slide era-slide era-one" data-slide="0" data-era-track="5ChkMS8OtdzJeqyybCc9R5" data-era-name="Billie Jean">
+    <section class="slide era-slide era-one" id="slide-era-1" data-slide="0" data-era-track="5ChkMS8OtdzJeqyybCc9R5" data-era-name="Billie Jean">
       <div class="slide-content era-content">
         <p class="era-label">1980 – 1999</p>
         <h1>Hits had more room to unfold.</h1>
@@ -1543,7 +1717,7 @@
       </div>
     </section>
 
-    <section class="slide era-slide era-two" data-slide="1" data-era-track="3ZFTkvIE7kyPt6Nu3PEa7V" data-era-name="Hips Don't Lie">
+    <section class="slide era-slide era-two" id="slide-era-2" data-slide="1" data-era-track="3ZFTkvIE7kyPt6Nu3PEa7V" data-era-name="Hips Don't Lie">
       <div class="slide-content era-content">
         <p class="era-label">2000 – 2014</p>
         <h1>Tracks become easier to separate from albums.</h1>
@@ -1558,7 +1732,7 @@
       </div>
     </section>
 
-    <section class="slide era-slide era-three" data-slide="2" data-era-track="2plbrEY59IikOBgBGLjaoe" data-era-name="Die With A Smile">
+    <section class="slide era-slide era-three" id="slide-era-3" data-slide="2" data-era-track="2plbrEY59IikOBgBGLjaoe" data-era-name="Die With A Smile">
       <div class="slide-content era-content">
         <p class="era-label">2015 – Present</p>
         <h1>Spotify becomes personal. Does the music change with it?</h1>
@@ -1574,7 +1748,7 @@
       </div>
     </section>
 
-    <section class="slide comparison-slide" data-slide="3">
+    <section class="slide comparison-slide" id="slide-comparison" data-slide="3">
       <div class="comparison-shell">
         <div class="opening-kicker">Comparison · Hear The Shift</div>
         <div class="comparison-split">
@@ -1613,7 +1787,7 @@
       </div>
     </section>
 
-    <section class="slide thesis-slide" data-slide="4">
+    <section class="slide thesis-slide" id="slide-thesis" data-slide="4">
       <div class="slide-content thesis-content">
         <h1>The data tells two stories.</h1>
         <p class="thesis-line teal">Songs are getting shorter.</p>
@@ -1623,7 +1797,7 @@
       <div class="down-arrow" aria-hidden="true">↓</div>
     </section>
 
-    <section class="slide charts-slide" data-slide="5">
+    <section class="slide charts-slide" id="slide-charts" data-slide="5">
       <div class="slide-scroll-inner" id="chartsInner">
         <section class="controls">
           <div class="row">
@@ -1706,7 +1880,7 @@
       <div class="keep-scrolling" id="keepScrollingHint">keep scrolling ↓</div>
     </section>
 
-    <section class="slide feature-slide" data-slide="6">
+    <section class="slide feature-slide" id="slide-features" data-slide="6">
       <section class="panel feature-explorer">
         <div class="opening-kicker">Explore More Signals</div>
         <h2>Song length is only one part of the shift.</h2>
@@ -1722,7 +1896,7 @@
       </section>
     </section>
 
-    <section class="slide summary-slide" data-slide="7">
+    <section class="slide summary-slide" id="slide-summary" data-slide="7">
       <div class="summary-shell">
         <div class="opening-kicker">What Changed, What Didn't</div>
         <div class="summary-grid" id="summaryGrid"></div>
@@ -1730,7 +1904,7 @@
       </div>
     </section>
 
-    <section class="slide search-slide" data-slide="8">
+    <section class="slide search-slide" id="slide-search" data-slide="8">
       <div class="search-shell">
         <div class="opening-kicker">Your Song</div>
         <h1>Find where your song sits in the story.</h1>
@@ -1993,13 +2167,13 @@
           xanchor: "left",
           yanchor: "top",
           xshift: 8,
-          bgcolor: "rgba(255,255,255,0.85)",
-          bordercolor: "rgba(209, 73, 91, 0.35)",
+          bgcolor: "rgba(17,17,24,0.9)",
+          bordercolor: "rgba(248,113,113,0.45)",
           borderwidth: 1,
           borderpad: 4,
           font: {
             size: 11,
-            color: "#982a3a",
+            color: "#f87171",
             family: "Space Grotesk, sans-serif"
           }
         }]
@@ -2053,12 +2227,12 @@
         y: values,
         marker: {
           size: 8,
-          color: years.map(y => y === state.selectedYear ? "#d1495b" : "#2f7d8c"),
-          line: { width: 1, color: "#ffffff" }
+          color: years.map(y => y === state.selectedYear ? "#f87171" : "#38bdf8"),
+          line: { width: 1, color: "#111118" }
         },
         line: {
           width: 2.5,
-          color: "#2f7d8c"
+          color: "#38bdf8"
         },
         hovertemplate:
           "Year: %{x}<br>Avg hit duration: %{y:.2f} min<extra></extra>"
@@ -2086,14 +2260,18 @@
       const layout = {
         margin: { t: 40, r: 18, b: 55, l: 55 },
         paper_bgcolor: "rgba(0,0,0,0)",
-        plot_bgcolor: "rgba(255,255,255,0.85)",
+        plot_bgcolor: "rgba(0,0,0,0)",
+        font: { color: "#d4d4d8", family: "Space Grotesk, sans-serif" },
         title: {
           text: "Average Hit Song Duration by Release Year",
-          font: { size: 18, family: "Space Grotesk, sans-serif" }
+          font: { size: 18, family: "Space Grotesk, sans-serif", color: "#ffffff" }
         },
         xaxis: {
           title: "Release Year",
-          gridcolor: "rgba(31,40,51,0.08)",
+          gridcolor: "#3f3f46",
+          linecolor: "#3f3f46",
+          tickfont: { color: "#a1a1aa" },
+          titlefont: { color: "#a1a1aa" },
           range: state.minYear && state.maxYear
             ? [state.minYear - 0.5, state.maxYear + 0.5]
             : undefined,
@@ -2104,7 +2282,10 @@
         },
         yaxis: {
           title: "Average Hit Duration (minutes)",
-          gridcolor: "rgba(31,40,51,0.08)"
+          gridcolor: "#3f3f46",
+          linecolor: "#3f3f46",
+          tickfont: { color: "#a1a1aa" },
+          titlefont: { color: "#a1a1aa" }
         },
         shapes: milestone.shapes,
         annotations: milestone.annotations,
@@ -2142,7 +2323,7 @@
           x: allDurations,
           histnorm: "probability",
           opacity: 0.45,
-          marker: { color: "#5a9fb0", line: { color: "#2f7d8c", width: 1 } },
+          marker: { color: "#38bdf8", line: { color: "#0ea5e9", width: 1 } },
           xbins: { size: 0.25 },
           hovertemplate: "Duration bin: %{x:.2f} min<br>Share of all songs: %{y:.2%}<extra></extra>"
         },
@@ -2152,7 +2333,7 @@
           x: hitDurations,
           histnorm: "probability",
           opacity: 0.8,
-          marker: { color: "#d1495b", line: { color: "#982a3a", width: 1 } },
+          marker: { color: "#f87171", line: { color: "#ef4444", width: 1 } },
           xbins: { size: 0.25 },
           hovertemplate: "Duration bin: %{x:.2f} min<br>Share of hits: %{y:.2%}<extra></extra>"
         }
@@ -2162,10 +2343,11 @@
         barmode: "overlay",
         margin: { t: 108, r: 18, b: 65, l: 70 },
         paper_bgcolor: "rgba(0,0,0,0)",
-        plot_bgcolor: "rgba(255,255,255,0.85)",
+        plot_bgcolor: "rgba(0,0,0,0)",
+        font: { color: "#d4d4d8", family: "Space Grotesk, sans-serif" },
         title: {
           text: `Song Length Distribution (${titleSuffix})`,
-          font: { size: 18, family: "Space Grotesk, sans-serif" },
+          font: { size: 18, family: "Space Grotesk, sans-serif", color: "#ffffff" },
           x: 0.5,
           xanchor: "center",
           y: 0.965,
@@ -2174,12 +2356,18 @@
         },
         xaxis: {
           title: "Track Duration (minutes)",
-          gridcolor: "rgba(31,40,51,0.08)"
+          gridcolor: "#3f3f46",
+          linecolor: "#3f3f46",
+          tickfont: { color: "#a1a1aa" },
+          titlefont: { color: "#a1a1aa" }
         },
         yaxis: {
           title: "Share of Tracks",
           tickformat: ".0%",
-          gridcolor: "rgba(31,40,51,0.08)"
+          gridcolor: "#3f3f46",
+          linecolor: "#3f3f46",
+          tickfont: { color: "#a1a1aa" },
+          titlefont: { color: "#a1a1aa" }
         },
         legend: {
           orientation: "h",
@@ -2187,8 +2375,8 @@
           yanchor: "bottom",
           x: 0.5,
           xanchor: "center",
-          bgcolor: "rgba(255,255,255,0.72)",
-          bordercolor: "rgba(31,40,51,0.15)",
+          bgcolor: "rgba(17,17,24,0.72)",
+          bordercolor: "#3f3f46",
           borderwidth: 1
         }
       };
@@ -2200,7 +2388,7 @@
         y0: 0,
         y1: 1,
         yref: "paper",
-        line: { color: "#1f2833", width: 2, dash: "dot" }
+        line: { color: "#d4d4d8", width: 2, dash: "dot" }
       }] : [];
 
       layout.shapes = medianShape;
@@ -2236,11 +2424,11 @@
         mode: "lines+markers",
         x: years,
         y: explicitShares,
-        line: { color: "#d1495b", width: 2.6 },
+        line: { color: "#f87171", width: 2.6 },
         marker: {
           size: 8,
-          color: "#d1495b",
-          line: { width: 1, color: "#ffffff" }
+          color: "#f87171",
+          line: { width: 1, color: "#111118" }
         },
         hovertemplate: "Year: %{x}<br>Explicit hit share: %{y:.1%}<extra></extra>"
       };
@@ -2248,14 +2436,18 @@
       const layout = {
         margin: { t: 48, r: 18, b: 55, l: 70 },
         paper_bgcolor: "rgba(0,0,0,0)",
-        plot_bgcolor: "rgba(255,255,255,0.85)",
+        plot_bgcolor: "rgba(0,0,0,0)",
+        font: { color: "#d4d4d8", family: "Space Grotesk, sans-serif" },
         title: {
           text: "Explicit Content Among Hit Songs",
-          font: { size: 18, family: "Space Grotesk, sans-serif" }
+          font: { size: 18, family: "Space Grotesk, sans-serif", color: "#ffffff" }
         },
         xaxis: {
           title: "Release Year",
-          gridcolor: "rgba(31,40,51,0.08)",
+          gridcolor: "#3f3f46",
+          linecolor: "#3f3f46",
+          tickfont: { color: "#a1a1aa" },
+          titlefont: { color: "#a1a1aa" },
           range: state.minYear && state.maxYear
             ? [state.minYear - 0.5, state.maxYear + 0.5]
             : undefined,
@@ -2268,7 +2460,10 @@
           title: "Share of Hits",
           tickformat: ".0%",
           range: [0, 1],
-          gridcolor: "rgba(31,40,51,0.08)"
+          gridcolor: "#3f3f46",
+          linecolor: "#3f3f46",
+          tickfont: { color: "#a1a1aa" },
+          titlefont: { color: "#a1a1aa" }
         },
         shapes: milestone.shapes,
         annotations: milestone.annotations,
@@ -2418,14 +2613,14 @@
         .attr("y", margin.top)
         .attr("width", Math.max(0, x(2015) - margin.left))
         .attr("height", innerHeight)
-        .attr("fill", "rgba(47, 125, 140, 0.06)");
+        .attr("fill", "rgba(56, 189, 248, 0.06)");
 
       svg.append("rect")
         .attr("x", x(2015))
         .attr("y", margin.top)
         .attr("width", Math.max(0, margin.left + innerWidth - x(2015)))
         .attr("height", innerHeight)
-        .attr("fill", "rgba(209, 73, 91, 0.06)");
+        .attr("fill", "rgba(248, 113, 113, 0.06)");
 
       svg.append("g")
         .attr("class", "grid")
@@ -2481,7 +2676,7 @@
         .attr("x2", x(2015))
         .attr("y1", margin.top)
         .attr("y2", margin.top + innerHeight)
-        .attr("stroke", "rgba(152, 42, 58, 0.72)")
+        .attr("stroke", "#f87171")
         .attr("stroke-width", 2)
         .attr("stroke-dasharray", "5 5");
 
@@ -2502,7 +2697,7 @@
         .attr("x2", margin.left + innerWidth - 212)
         .attr("y1", 26)
         .attr("y2", 26)
-        .attr("stroke", "rgba(47, 125, 140, 0.48)")
+        .attr("stroke", "#38bdf8")
         .attr("stroke-width", 3);
 
       svg.append("line")
@@ -2510,7 +2705,7 @@
         .attr("x2", margin.left + innerWidth - 104)
         .attr("y1", 26)
         .attr("y2", 26)
-        .attr("stroke", "#d1495b")
+        .attr("stroke", "#a78bfa")
         .attr("stroke-width", 4);
 
       const pathAll = svg.append("path")
@@ -2556,7 +2751,7 @@
 
       const focusDot = svg.append("circle")
         .attr("r", 7)
-        .attr("fill", "#d1495b")
+        .attr("fill", "#a78bfa")
         .attr("stroke", "#fff")
         .attr("stroke-width", 2)
         .style("opacity", 0);
@@ -2946,7 +3141,7 @@
           .datum(values)
           .attr("d", line)
           .attr("fill", "none")
-          .attr("stroke", verdictClass === "up" ? "#2f7d8c" : verdictClass === "down" ? "#d1495b" : "#556270")
+          .attr("stroke", verdictClass === "up" ? "#a78bfa" : verdictClass === "down" ? "#f87171" : "#a1a1aa")
           .attr("stroke-width", 3)
           .attr("stroke-linecap", "round");
       });
@@ -2970,9 +3165,9 @@
         return { year: stat.year, value: featureAverage(hits, FEATURE_CONFIG.energy) };
       });
       const charts = [
-        { title: "Duration", color: "#73c2cf", values: durationSeries },
-        { title: "Explicit Share", color: "#e36b7a", values: explicitSeries },
-        { title: "Energy", color: "#f7c948", values: featureSeries }
+        { title: "Duration", color: "#38bdf8", values: durationSeries },
+        { title: "Explicit Share", color: "#f87171", values: explicitSeries },
+        { title: "Energy", color: "#a78bfa", values: featureSeries }
       ];
 
       ids.compactChartBoard.innerHTML = "";
