@@ -17,7 +17,7 @@ from pathlib import Path
 from typing import Dict, List, Set
 
 
-FEATURE_FIELDS = ["danceability", "energy", "acousticness", "valence"]
+FEATURE_FIELDS = ["danceability", "energy", "acousticness", "valence", "tempo"]
 
 
 def quantile(sorted_vals: List[int], q: float) -> float:
