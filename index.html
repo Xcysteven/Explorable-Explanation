@@ -937,42 +937,288 @@
       opacity: 0.7;
     }
 
-    #slide-thesis {
-      background: #0d0d0d;
+    #slide-thesis,
+    .slide-thesis {
+      background: #080810;
+      overflow: hidden;
     }
 
-    #slide-thesis::before {
+    #slide-thesis::before,
+    .slide-thesis::before {
+      content: "";
+      background:
+        radial-gradient(
+          ellipse 55% 55% at 20% 60%,
+          rgba(56, 189, 248, 0.18) 0%,
+          transparent 70%
+        ),
+        radial-gradient(
+          ellipse 55% 55% at 80% 40%,
+          rgba(248, 113, 113, 0.18) 0%,
+          transparent 70%
+        );
+      animation: auroraDrift 8s ease-in-out infinite alternate;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    #slide-thesis::after,
+    .slide-thesis::after {
       content: "";
       background-image: var(--vinyl-record);
       background-repeat: no-repeat;
       background-position: center;
       background-size: 70vmin 70vmin;
       opacity: 0.06;
+      z-index: 1;
+    }
+
+    #slide-thesis .slide-content,
+    #slide-thesis .down-arrow {
+      z-index: 2;
+    }
+
+    @keyframes auroraDrift {
+      0% {
+        background:
+          radial-gradient(
+            ellipse 55% 55% at 18% 62%,
+            rgba(56, 189, 248, 0.18) 0%,
+            transparent 70%
+          ),
+          radial-gradient(
+            ellipse 55% 55% at 82% 38%,
+            rgba(248, 113, 113, 0.18) 0%,
+            transparent 70%
+          );
+      }
+      50% {
+        background:
+          radial-gradient(
+            ellipse 65% 50% at 22% 55%,
+            rgba(56, 189, 248, 0.22) 0%,
+            transparent 70%
+          ),
+          radial-gradient(
+            ellipse 50% 65% at 78% 45%,
+            rgba(248, 113, 113, 0.22) 0%,
+            transparent 70%
+          );
+      }
+      100% {
+        background:
+          radial-gradient(
+            ellipse 60% 60% at 15% 65%,
+            rgba(56, 189, 248, 0.15) 0%,
+            transparent 70%
+          ),
+          radial-gradient(
+            ellipse 60% 60% at 85% 35%,
+            rgba(248, 113, 113, 0.15) 0%,
+            transparent 70%
+          );
+      }
     }
 
     #slide-charts {
-      background: #0d1117;
+      background:
+        radial-gradient(circle at 14% 18%, rgba(56, 189, 248, 0.14), transparent 34%),
+        radial-gradient(circle at 84% 24%, rgba(248, 113, 113, 0.12), transparent 32%),
+        linear-gradient(135deg, #0c1420 0%, #0a0c12 54%, #140d12 100%);
+    }
+
+    #slide-charts::before {
+      content: "";
+      background-image: var(--subtle-wave);
+      background-repeat: repeat-x;
+      background-position: 0 62%;
+      background-size: 92% 70%;
+      opacity: 0.12;
+      animation: waveDrift 14s ease-in-out infinite alternate;
+    }
+
+    #slide-charts::after {
+      content: "";
+      background:
+        linear-gradient(90deg, rgba(56, 189, 248, 0.12), transparent 36%),
+        linear-gradient(270deg, rgba(248, 113, 113, 0.12), transparent 36%),
+        repeating-linear-gradient(
+          90deg,
+          rgba(255, 255, 255, 0.022) 0,
+          rgba(255, 255, 255, 0.022) 1px,
+          transparent 1px,
+          transparent 86px
+        );
+      opacity: 0.8;
     }
 
     #slide-features {
-      background: #0d1117;
+      --feature-aura: rgba(167, 139, 250, 0.18);
+      --feature-aura-2: rgba(56, 189, 248, 0.1);
+      background: linear-gradient(145deg, #0b0d13 0%, #10131a 52%, #0b0b10 100%);
+      transition: background 450ms ease;
     }
 
-    #slide-charts::before,
+    #slide-features[data-active-feature="explicit"] {
+      --feature-aura: rgba(248, 113, 113, 0.2);
+      --feature-aura-2: rgba(167, 139, 250, 0.08);
+    }
+
+    #slide-features[data-active-feature="energy"] {
+      --feature-aura: rgba(167, 139, 250, 0.22);
+      --feature-aura-2: rgba(56, 189, 248, 0.1);
+    }
+
+    #slide-features[data-active-feature="danceability"] {
+      --feature-aura: rgba(29, 185, 84, 0.18);
+      --feature-aura-2: rgba(167, 139, 250, 0.12);
+    }
+
+    #slide-features[data-active-feature="valence"] {
+      --feature-aura: rgba(250, 204, 21, 0.15);
+      --feature-aura-2: rgba(248, 113, 113, 0.12);
+    }
+
+    #slide-features[data-active-feature="acousticness"] {
+      --feature-aura: rgba(148, 163, 184, 0.16);
+      --feature-aura-2: rgba(56, 189, 248, 0.08);
+    }
+
+    #slide-features[data-active-feature="tempo"] {
+      --feature-aura: rgba(34, 211, 238, 0.16);
+      --feature-aura-2: rgba(167, 139, 250, 0.13);
+    }
+
     #slide-features::before {
       content: "";
-      background-image: var(--subtle-wave);
+      background:
+        radial-gradient(ellipse 48% 38% at 28% 26%, var(--feature-aura), transparent 72%),
+        radial-gradient(ellipse 42% 34% at 82% 62%, var(--feature-aura-2), transparent 70%),
+        var(--subtle-wave);
       background-repeat: no-repeat;
-      background-position: center;
-      background-size: 100% 100%;
+      background-position: center, center, center 78%;
+      background-size: 100% 100%, 100% 100%, 100% 74%;
+      opacity: 0.92;
+      animation: featureAura 7s ease-in-out infinite alternate;
+    }
+
+    #slide-features::after {
+      content: "";
+      background-image:
+        linear-gradient(rgba(255, 255, 255, 0.026) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.022) 1px, transparent 1px);
+      background-size: 72px 72px;
+      opacity: 0.25;
+      mask-image: radial-gradient(circle at 50% 42%, #000 0%, transparent 72%);
     }
 
     #slide-summary {
-      background: linear-gradient(180deg, #0d1117 0%, #0a0a0a 100%);
+      background:
+        radial-gradient(circle at 18% 16%, rgba(56, 189, 248, 0.18), transparent 30%),
+        radial-gradient(circle at 82% 18%, rgba(167, 139, 250, 0.16), transparent 30%),
+        radial-gradient(circle at 50% 95%, rgba(248, 113, 113, 0.22), transparent 38%),
+        linear-gradient(180deg, #10131d 0%, #07070a 62%, #020203 100%);
+    }
+
+    #slide-summary::before {
+      content: "";
+      background-image:
+        radial-gradient(circle at 10% 18%, rgba(56, 189, 248, 0.72) 0 1.5px, transparent 3px),
+        radial-gradient(circle at 22% 74%, rgba(248, 113, 113, 0.7) 0 1.5px, transparent 3px),
+        radial-gradient(circle at 42% 32%, rgba(167, 139, 250, 0.72) 0 1.5px, transparent 3px),
+        radial-gradient(circle at 64% 68%, rgba(250, 204, 21, 0.55) 0 1.5px, transparent 3px),
+        radial-gradient(circle at 84% 24%, rgba(29, 185, 84, 0.62) 0 1.5px, transparent 3px),
+        radial-gradient(circle at 52% 50%, rgba(255, 255, 255, 0.18) 0 1px, transparent 2px);
+      background-size: 210px 170px, 250px 200px, 270px 230px, 230px 180px, 290px 240px, 90px 90px;
+      filter: drop-shadow(0 0 10px rgba(56, 189, 248, 0.12));
+      opacity: 0.72;
+      animation: constellationFloat 13s linear infinite;
+    }
+
+    #slide-summary::after {
+      content: "";
+      background:
+        radial-gradient(ellipse 58% 36% at 50% 56%, transparent 58%, rgba(56, 189, 248, 0.12) 59%, transparent 62%),
+        radial-gradient(ellipse 72% 42% at 50% 58%, transparent 60%, rgba(248, 113, 113, 0.1) 61%, transparent 64%),
+        linear-gradient(28deg, transparent 0 44%, rgba(255, 255, 255, 0.06) 45%, transparent 46% 100%),
+        linear-gradient(152deg, transparent 0 48%, rgba(255, 255, 255, 0.045) 49%, transparent 50% 100%),
+        linear-gradient(90deg, transparent 0 49%, rgba(250, 204, 21, 0.05) 50%, transparent 51% 100%);
+      background-size: 100% 100%, 100% 100%, 320px 220px, 380px 250px, 520px 100%;
+      opacity: 0.78;
+      animation: constellationLines 14s ease-in-out infinite alternate;
     }
 
     #slide-search {
-      background: linear-gradient(180deg, #0d1117 0%, #0a0a0a 100%);
+      background:
+        radial-gradient(circle at 50% 24%, rgba(250, 204, 21, 0.08), transparent 32%),
+        linear-gradient(180deg, #101217 0%, #050506 100%);
+    }
+
+    #slide-search::before {
+      content: "";
+      background:
+        repeating-linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.035) 0 1px,
+          transparent 1px 42px,
+          rgba(255, 255, 255, 0.05) 42px 43px,
+          transparent 43px 96px
+        ),
+        repeating-linear-gradient(
+          90deg,
+          transparent 0 26px,
+          rgba(255, 255, 255, 0.045) 26px 27px,
+          transparent 27px 58px
+        );
+      opacity: 0.2;
+      transform: rotate(-4deg) scale(1.15);
+      animation: playlistDrift 18s linear infinite;
+    }
+
+    #slide-search::after {
+      content: "";
+      background:
+        radial-gradient(ellipse 44% 26% at 50% 24%, rgba(250, 204, 21, 0.14), transparent 72%),
+        radial-gradient(ellipse 38% 30% at 22% 64%, rgba(56, 189, 248, 0.09), transparent 76%),
+        radial-gradient(ellipse 34% 26% at 82% 68%, rgba(167, 139, 250, 0.08), transparent 76%);
+      opacity: 0.9;
+      animation: searchSpotlight 8s ease-in-out infinite alternate;
+    }
+
+    @keyframes waveDrift {
+      0% { background-position: -8% 58%; opacity: 0.08; }
+      100% { background-position: 16% 72%; opacity: 0.16; }
+    }
+
+    @keyframes featureAura {
+      0% {
+        filter: saturate(0.9);
+        transform: scale(1);
+      }
+      100% {
+        filter: saturate(1.25);
+        transform: scale(1.04);
+      }
+    }
+
+    @keyframes constellationFloat {
+      0% { background-position: 0 0, 0 0, 0 0, 0 0, 0 0; }
+      100% { background-position: 120px -80px, -140px 120px, 160px 90px, -90px -110px, 180px -140px; }
+    }
+
+    @keyframes constellationLines {
+      0% { background-position: 0 0, 0 0; }
+      100% { background-position: 120px 90px, -160px 110px; }
+    }
+
+    @keyframes playlistDrift {
+      0% { background-position: 0 0, 0 0; }
+      100% { background-position: 0 192px, 116px 0; }
+    }
+
+    @keyframes searchSpotlight {
+      0% { transform: translateY(-1%) scale(1); opacity: 0.75; }
+      100% { transform: translateY(2%) scale(1.05); opacity: 1; }
     }
 
     #slide-era-1,
@@ -2158,6 +2404,11 @@
   </main>
 
   <script>
+    const SPOTIFY_CLIENT_ID = "YOUR_CLIENT_ID_HERE";
+    const SPOTIFY_CLIENT_SECRET = "YOUR_CLIENT_SECRET_HERE";
+    let _spotifyToken = null;
+    let _spotifyTokenExp = 0;
+
     const state = {
       songs: [],
       selectedYear: null,
@@ -2461,13 +2712,31 @@
         traces.push({
           type: "scatter",
           mode: "markers",
-          name: "Selected Song",
+          name: "Selected song glow",
           x: [state.selectedSong.year],
           y: [state.selectedSong.duration],
           marker: {
-            size: 18,
-            color: "#f7c948",
-            line: { width: 3, color: "#ffffff" },
+            size: 32,
+            color: "rgba(250, 204, 21, 0.14)",
+            line: { width: 2, color: "rgba(250, 204, 21, 0.72)" },
+            symbol: "circle"
+          },
+          hoverinfo: "skip",
+          showlegend: false
+        });
+        traces.push({
+          type: "scatter",
+          mode: "markers+text",
+          name: "Selected Song",
+          x: [state.selectedSong.year],
+          y: [state.selectedSong.duration],
+          text: [state.selectedSong.trackName || "Your song"],
+          textposition: "top right",
+          textfont: { color: "#facc15", size: 11, family: "Space Grotesk, sans-serif" },
+          marker: {
+            size: 12,
+            color: "#facc15",
+            line: { width: 2, color: "#ffffff" },
             symbol: "circle"
           },
           hovertemplate: `${state.selectedSong.trackName || "Selected song"} — ${state.selectedSong.year}<br>Duration: %{y:.2f} min<extra></extra>`
@@ -2521,12 +2790,7 @@
         hovermode: "closest"
       };
 
-      Plotly.react(ids.chart1, traces, layout, { responsive: true, displayModeBar: false }).then(() => {
-        if (state.selectedSong) {
-          const selectedPoints = ids.chart1.querySelectorAll(".scatterlayer .trace:last-child .points path");
-          selectedPoints.forEach(point => point.classList.add("selected-song-dot"));
-        }
-      });
+      Plotly.react(ids.chart1, traces, layout, { responsive: true, displayModeBar: false });
       ids.chart1.removeAllListeners("plotly_click");
 
       ids.chart1.on("plotly_click", evt => {
@@ -2571,10 +2835,10 @@
       const binSize = 0.25;
       const selectedSongInScope =
         state.selectedSong &&
-        Number.isFinite(state.selectedSong.duration) &&
-        (state.selectedYear === null || state.selectedSong.year === state.selectedYear);
+        Number.isFinite(state.selectedSong.duration);
 
       let selectedBinAnnotation = null;
+      let selectedBinShape = null;
       if (selectedSongInScope) {
         const songDur = state.selectedSong.duration;
         const binStart = Math.floor(songDur / binSize) * binSize;
@@ -2585,6 +2849,19 @@
         const allShare = allDurations.length ? allBinCount / allDurations.length : 0;
         const hitShare = hitDurations.length ? hitBinCount / hitDurations.length : 0;
         const markerHeight = Math.max(allShare, hitShare, 0.005);
+
+        selectedBinShape = {
+          type: "rect",
+          xref: "x",
+          yref: "paper",
+          x0: binStart,
+          x1: binEnd,
+          y0: 0,
+          y1: 1,
+          fillcolor: "rgba(250, 204, 21, 0.12)",
+          line: { color: "#facc15", width: 2 },
+          layer: "above"
+        };
 
         traces.push({
           type: "bar",
@@ -2606,14 +2883,17 @@
           x: binMid,
           y: markerHeight,
           xref: "x",
-          yref: "y",
-          text: "your song",
-          showarrow: true,
-          arrowhead: 2,
+          yref: "paper",
+          text: "selected song duration",
+          showarrow: false,
           ax: 0,
-          ay: -34,
+          ay: 0,
           font: { color: "#facc15", size: 11, family: "Space Grotesk, sans-serif" },
-          arrowcolor: "#facc15"
+          bgcolor: "rgba(17, 17, 24, 0.86)",
+          bordercolor: "rgba(250, 204, 21, 0.55)",
+          borderwidth: 1,
+          borderpad: 4,
+          y: 0.98
         };
       }
 
@@ -2669,7 +2949,7 @@
         line: { color: "#d4d4d8", width: 2, dash: "dot" }
       }] : [];
 
-      layout.shapes = medianShape;
+      layout.shapes = selectedBinShape ? [...medianShape, selectedBinShape] : medianShape;
       if (selectedBinAnnotation) {
         layout.annotations = [selectedBinAnnotation];
       }
@@ -2737,6 +3017,9 @@
       if (!ids.featureChart) return;
 
       const config = FEATURE_CONFIG[state.activeFeature] || FEATURE_CONFIG.duration;
+      document
+        .getElementById("slide-features")
+        ?.setAttribute("data-active-feature", state.activeFeature);
       const groups = buildYearGroups(state.songs);
       const values = [];
 
@@ -3176,12 +3459,30 @@
       return Math.max(0, Math.min(1, (tempo - 60) / 140));
     }
 
-    function renderSearchResults(query) {
-      if (!ids.searchResults) return;
-      const q = query.trim().toLowerCase();
-      ids.searchResults.innerHTML = "";
-      if (q.length < 2) return;
+    function clearChartUnavailableMessage() {
+      const el = document.getElementById("chart-unavail-msg");
+      if (el) el.style.display = "none";
+    }
 
+    function showChartUnavailableMessage(year, maxYear) {
+      clearChartUnavailableMessage();
+      let msgEl = document.getElementById("chart-unavail-msg");
+      if (!msgEl) {
+        msgEl = document.createElement("p");
+        msgEl.id = "chart-unavail-msg";
+        msgEl.style.cssText = "color:#a1a1aa;font-size:13px;text-align:center;margin-top:8px;";
+        ids.compactChartBoard?.after(msgEl);
+      }
+
+      msgEl.textContent = year > maxYear
+        ? `Chart position unavailable: this dataset ends at ${maxYear}, but the audio features above are pulled from Spotify.`
+        : "This song predates the dataset. Audio features shown are from Spotify.";
+      msgEl.style.display = "block";
+    }
+
+    function localSearch(query) {
+      const q = query.trim().toLowerCase();
+      if (q.length < 2) return [];
       const matches = [];
       for (const song of state.songs) {
         const haystack = `${song.trackName} ${song.artistName}`.toLowerCase();
@@ -3190,15 +3491,194 @@
           if (matches.length >= 5) break;
         }
       }
+      return matches;
+    }
 
-      matches.forEach(song => {
+    function displaySearchResults(songs, onSelect = selectSong) {
+      if (!ids.searchResults) return;
+      ids.searchResults.innerHTML = "";
+      songs.forEach(song => {
         const button = document.createElement("button");
         button.type = "button";
         button.className = "search-result";
         button.textContent = `${song.trackName} — ${song.artistName} (${song.year})`;
-        button.addEventListener("click", () => selectSong(song));
+        button.addEventListener("click", () => onSelect(song));
         ids.searchResults.appendChild(button);
       });
+    }
+
+    function showSearchLoading(message) {
+      if (!ids.searchResults) return;
+      ids.searchResults.innerHTML = `<div style="color:#a1a1aa;font-size:13px;padding:12px;text-align:center;">${message}</div>`;
+    }
+
+    function showNoResults(message = "No results found.") {
+      showSearchLoading(message);
+    }
+
+    function renderSearchResults(query) {
+      if (!ids.searchResults) return;
+      clearChartUnavailableMessage();
+      ids.searchResults.innerHTML = "";
+      const q = query.trim();
+      if (q.length < 2) return;
+
+      const matches = localSearch(q);
+      if (matches.length) {
+        displaySearchResults(matches);
+        return;
+      }
+
+      showSearchLoading("No local matches. Press Find my song to search Spotify.");
+    }
+
+    async function getSpotifyToken() {
+      if (_spotifyToken && Date.now() < _spotifyTokenExp) {
+        return _spotifyToken;
+      }
+
+      if (
+        SPOTIFY_CLIENT_ID === "YOUR_CLIENT_ID_HERE" ||
+        SPOTIFY_CLIENT_SECRET === "YOUR_CLIENT_SECRET_HERE"
+      ) {
+        throw new Error("Spotify credentials are not configured.");
+      }
+
+      const resp = await fetch("https://accounts.spotify.com/api/token", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+          "Authorization": `Basic ${btoa(`${SPOTIFY_CLIENT_ID}:${SPOTIFY_CLIENT_SECRET}`)}`
+        },
+        body: "grant_type=client_credentials"
+      });
+
+      if (!resp.ok) {
+        throw new Error(`Spotify token request failed: ${resp.status}`);
+      }
+
+      const data = await resp.json();
+      _spotifyToken = data.access_token;
+      _spotifyTokenExp = Date.now() + ((data.expires_in || 3600) - 60) * 1000;
+      return _spotifyToken;
+    }
+
+    async function handleSearch(query) {
+      const q = query.trim();
+      if (q.length < 2) return;
+
+      clearChartUnavailableMessage();
+      const localResults = localSearch(q);
+      if (localResults.length) {
+        displaySearchResults(localResults);
+        return;
+      }
+
+      showSearchLoading("Searching Spotify...");
+      try {
+        const token = await getSpotifyToken();
+        const searchResp = await fetch(
+          `https://api.spotify.com/v1/search?q=${encodeURIComponent(q)}&type=track&limit=5`,
+          { headers: { "Authorization": `Bearer ${token}` } }
+        );
+
+        if (!searchResp.ok) {
+          throw new Error(`Spotify search failed: ${searchResp.status}`);
+        }
+
+        const searchData = await searchResp.json();
+        const tracks = searchData.tracks?.items || [];
+        if (!tracks.length) {
+          showNoResults();
+          return;
+        }
+
+        displaySpotifySearchResults(tracks);
+      } catch (err) {
+        console.error("Spotify API error:", err);
+        showNoResults("No local match found. Spotify search is unavailable until credentials are configured.");
+      }
+    }
+
+    function displaySpotifySearchResults(tracks) {
+      const mapped = tracks.map(track => ({
+        trackName: track.name,
+        artistName: track.artists.map(artist => artist.name).join(", "),
+        year: Number.parseInt((track.album.release_date || "").split("-")[0], 10),
+        _spotifyTrack: track
+      }));
+
+      displaySearchResults(mapped, song => {
+        if (song._spotifyTrack) {
+          selectSpotifyTrack(song._spotifyTrack);
+        }
+      });
+    }
+
+    async function selectSpotifyTrack(track) {
+      showSearchLoading("Loading Spotify audio features...");
+      try {
+        const token = await getSpotifyToken();
+        const featResp = await fetch(
+          `https://api.spotify.com/v1/audio-features/${track.id}`,
+          { headers: { "Authorization": `Bearer ${token}` } }
+        );
+
+        if (!featResp.ok) {
+          throw new Error(`Spotify audio features failed: ${featResp.status}`);
+        }
+
+        const feat = await featResp.json();
+        if (!feat || feat.error) {
+          showNoResults("Spotify did not return audio features for this track.");
+          return;
+        }
+
+        const releaseYear = Number.parseInt((track.album.release_date || "").split("-")[0], 10);
+        const durationMs = Number.isFinite(feat.duration_ms) ? feat.duration_ms : track.duration_ms;
+        const song = {
+          idx: `spotify-${track.id}`,
+          year: releaseYear,
+          duration: durationMs / 60000,
+          popularity: track.popularity,
+          trackId: track.id,
+          trackName: track.name,
+          artistName: track.artists.map(artist => artist.name).join(", "),
+          explicit: !!track.explicit,
+          features: {
+            danceability: Number.isFinite(feat.danceability) ? feat.danceability : null,
+            energy: Number.isFinite(feat.energy) ? feat.energy : null,
+            acousticness: Number.isFinite(feat.acousticness) ? feat.acousticness : null,
+            valence: Number.isFinite(feat.valence) ? feat.valence : null,
+            tempo: Number.isFinite(feat.tempo) ? feat.tempo : null
+          },
+          _fromSpotifyAPI: true
+        };
+
+        if (ids.searchResults) ids.searchResults.innerHTML = "";
+        if (ids.songSearchInput) ids.songSearchInput.value = `${song.trackName} ${song.artistName}`;
+        renderSelectedSongCard(song);
+        renderRadarChart(song);
+
+        const minYear = state.minYear;
+        const maxYear = state.maxYear;
+        if (Number.isFinite(releaseYear) && releaseYear >= minYear && releaseYear <= maxYear) {
+          state.selectedSong = song;
+          clearChartUnavailableMessage();
+          renderChart1();
+          renderChart2();
+          renderCompactCharts();
+        } else {
+          state.selectedSong = null;
+          renderChart1();
+          renderChart2();
+          renderCompactCharts();
+          showChartUnavailableMessage(releaseYear, maxYear);
+        }
+      } catch (err) {
+        console.error("Spotify API error:", err);
+        showNoResults("Spotify track details are unavailable.");
+      }
     }
 
     function featureDisplay(value, formatter = value => value.toFixed(2)) {
@@ -3206,6 +3686,7 @@
     }
 
     function selectSong(song) {
+      clearChartUnavailableMessage();
       state.selectedSong = song;
       if (ids.searchResults) ids.searchResults.innerHTML = "";
       if (ids.songSearchInput) ids.songSearchInput.value = `${song.trackName} ${song.artistName}`;
@@ -3392,9 +3873,19 @@
         ids.compactChartBoard.appendChild(card);
 
         const values = chart.values.filter(d => Number.isFinite(d.value));
+        const selectedValue = (() => {
+          if (!state.selectedSong) return null;
+          if (chart.title === "Duration") return state.selectedSong.duration;
+          if (chart.title === "Energy") return state.selectedSong.features.energy;
+          return null;
+        })();
+        const yDomainValues = values.map(d => d.value);
+        if (Number.isFinite(selectedValue)) {
+          yDomainValues.push(selectedValue);
+        }
         const svg = d3.select(card.querySelector("svg"));
         const x = d3.scaleLinear().domain(d3.extent(values, d => d.year)).range([12, 208]);
-        const y = d3.scaleLinear().domain(d3.extent(values, d => d.value)).nice().range([78, 12]);
+        const y = d3.scaleLinear().domain(d3.extent(yDomainValues)).nice().range([78, 12]);
         const line = d3.line()
           .x(d => x(d.year))
           .y(d => y(d.value))
@@ -3408,13 +3899,42 @@
           .attr("stroke-width", 3)
           .attr("stroke-linecap", "round");
 
-        if (state.selectedSong && chart.title === "Duration") {
+        if (state.selectedSong && chart.title === "Duration" && Number.isFinite(selectedValue)) {
           svg.append("circle")
+            .attr("class", "mini-song-dot selected-song-dot")
             .attr("cx", x(state.selectedSong.year))
-            .attr("cy", y(state.selectedSong.duration))
-            .attr("r", 6)
-            .attr("fill", "#f7c948")
-            .attr("class", "selected-song-dot");
+            .attr("cy", y(selectedValue))
+            .attr("r", 5)
+            .attr("fill", "#facc15")
+            .attr("stroke", "#fff")
+            .attr("stroke-width", 1.5)
+            .style("filter", "drop-shadow(0 0 4px #facc15)");
+        }
+
+        if (state.selectedSong && chart.title === "Explicit Share") {
+          const exLineX = x(state.selectedSong.year);
+          svg.append("line")
+            .attr("class", "mini-song-line")
+            .attr("x1", exLineX)
+            .attr("x2", exLineX)
+            .attr("y1", 8)
+            .attr("y2", 84)
+            .attr("stroke", "#facc15")
+            .attr("stroke-width", 1.5)
+            .attr("stroke-dasharray", "3,3")
+            .attr("opacity", 0.85);
+        }
+
+        if (state.selectedSong && chart.title === "Energy" && Number.isFinite(selectedValue)) {
+          svg.append("circle")
+            .attr("class", "mini-song-dot selected-song-dot")
+            .attr("cx", x(state.selectedSong.year))
+            .attr("cy", y(selectedValue))
+            .attr("r", 5)
+            .attr("fill", "#facc15")
+            .attr("stroke", "#fff")
+            .attr("stroke-width", 1.5)
+            .style("filter", "drop-shadow(0 0 4px #facc15)");
         }
       });
     }
@@ -3548,12 +4068,12 @@
         renderSearchResults(event.target.value);
       });
 
-      ids.songSearchBtn.addEventListener("click", () => {
+      ids.songSearchBtn.addEventListener("click", async () => {
         const firstResult = ids.searchResults?.querySelector(".search-result");
         if (firstResult) {
           firstResult.click();
         } else {
-          renderSearchResults(ids.songSearchInput.value);
+          await handleSearch(ids.songSearchInput.value);
         }
       });
 
