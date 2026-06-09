@@ -13,3 +13,4 @@ __pycache__/
 
 # Local secrets
 .env
+assets/README.md

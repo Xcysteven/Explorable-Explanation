@@ -851,6 +851,92 @@
       z-index: 0;
     }
 
+    .comparison-bg {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .comp-bg-left,
+    .comp-bg-right {
+      width: 50%;
+      height: 100%;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .comp-bg-left {
+      background: #1a0d00;
+    }
+
+    .comp-bg-right {
+      background: #00101a;
+    }
+
+    .bg-video {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      opacity: 0.32;
+      transition: opacity 0.5s ease;
+    }
+
+    .bg-overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      opacity: 1;
+      transition: opacity 0.4s ease;
+    }
+
+    .left-overlay {
+      background: linear-gradient(
+        to right,
+        rgba(10, 4, 0, 0.78) 0%,
+        rgba(10, 4, 0, 0.48) 100%
+      );
+    }
+
+    .right-overlay {
+      background: linear-gradient(
+        to left,
+        rgba(0, 8, 18, 0.78) 0%,
+        rgba(0, 8, 18, 0.48) 100%
+      );
+    }
+
+    .comparison-bg::after {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      width: 1px;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.1);
+      content: "";
+      pointer-events: none;
+      z-index: 3;
+    }
+
+    .comparison-slide .comparison-shell {
+      position: relative;
+      z-index: 2;
+    }
+
+    .comparison-slide.is-left-hovered .comp-bg-left .bg-video,
+    .comparison-slide.is-right-hovered .comp-bg-right .bg-video {
+      opacity: 0.55;
+    }
+
+    .comparison-slide.is-left-hovered .comp-bg-left .left-overlay,
+    .comparison-slide.is-right-hovered .comp-bg-right .right-overlay {
+      opacity: 0.7;
+    }
+
     #slide-thesis {
       background: #0d0d0d;
     }
@@ -1243,6 +1329,49 @@
       height: 152px;
       border: 0;
       border-radius: 14px;
+    }
+
+    .comparison-embed {
+      position: relative;
+      transform: translateY(6px);
+      box-shadow: none;
+      transition: transform 0.35s ease, box-shadow 0.35s ease;
+    }
+
+    .comparison-column-left.is-hovered .comparison-embed {
+      transform: translateY(0);
+      box-shadow: 0 0 36px rgba(255, 200, 100, 0.15);
+    }
+
+    .comparison-column-right.is-hovered .comparison-embed {
+      transform: translateY(0);
+      box-shadow: 0 0 36px rgba(100, 180, 255, 0.15);
+    }
+
+    .play-hover-label {
+      display: block;
+      height: 0;
+      overflow: hidden;
+      padding-bottom: 0;
+      color: rgba(255, 255, 255, 0.55);
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-align: center;
+      text-transform: uppercase;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .comparison-column.is-hovered .play-hover-label {
+      height: auto;
+      padding-bottom: 6px;
+      opacity: 1;
+      animation: npHoverPulse 1.5s ease-in-out infinite;
+    }
+
+    @keyframes npHoverPulse {
+      0%, 100% { opacity: 0.55; }
+      50% { opacity: 1; }
     }
 
     .timeline-bar {
@@ -1652,6 +1781,63 @@
       }
     }
 
+    #now-playing-bar {
+      position: fixed;
+      bottom: 28px;
+      left: 28px;
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(15, 15, 22, 0.93);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-radius: 999px;
+      padding: 10px 18px 10px 14px;
+      font-size: 13px;
+      color: #e4e4e7;
+      box-shadow: 0 4px 28px rgba(0, 0, 0, 0.5);
+      opacity: 0;
+      transform: translateY(14px);
+      pointer-events: none;
+      transition: opacity 0.35s ease, transform 0.35s ease;
+      user-select: none;
+    }
+
+    #now-playing-bar.visible {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    .np-icon {
+      font-size: 15px;
+      animation: npPulse 1.6s ease-in-out infinite;
+    }
+
+    @keyframes npPulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    #np-stop-btn {
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid rgba(239, 68, 68, 0.35);
+      color: #fca5a5;
+      border-radius: 999px;
+      padding: 4px 14px;
+      font-size: 12px;
+      letter-spacing: 0.04em;
+      cursor: pointer;
+      transition: background 0.2s ease;
+      white-space: nowrap;
+    }
+
+    #np-stop-btn:hover {
+      background: rgba(239, 68, 68, 0.32);
+    }
+
     @media (max-width: 680px) {
       body {
         padding: 0;
@@ -1774,33 +1960,66 @@
     </section>
 
     <section class="slide comparison-slide" id="slide-comparison" data-slide="3">
+      <div class="comparison-bg" aria-hidden="true">
+        <!-- Developer: download videos from URLs above and place here -->
+        <div class="comp-bg-left">
+          <video
+            class="bg-video"
+            autoplay
+            muted
+            loop
+            playsinline
+            src="assets/era-classic.mp4"
+            onerror="this.parentElement.style.background='#1a0d00'"
+          ></video>
+          <div class="bg-overlay left-overlay"></div>
+        </div>
+        <div class="comp-bg-right">
+          <video
+            class="bg-video"
+            autoplay
+            muted
+            loop
+            playsinline
+            src="assets/era-modern.mp4"
+            onerror="this.parentElement.style.background='#00101a'"
+          ></video>
+          <div class="bg-overlay right-overlay"></div>
+        </div>
+      </div>
       <div class="comparison-shell">
         <div class="opening-kicker">Comparison · Hear The Shift</div>
         <div class="comparison-split">
-          <article class="comparison-column">
+          <article class="comparison-column comparison-column-left" data-comparison-side="left">
             <p class="comparison-year">1982</p>
             <h2>Billie Jean</h2>
             <p>Michael Jackson</p>
-            <iframe
-              title="Spotify embed: Billie Jean"
-              src="https://open.spotify.com/embed/track/5ChkMS8OtdzJeqyybCc9R5?utm_source=generator"
-              loading="lazy"
-              allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-            ></iframe>
+            <span class="play-hover-label">▶ Click to play</span>
+            <div class="comparison-embed">
+              <iframe
+                title="Spotify embed: Billie Jean"
+                src="https://open.spotify.com/embed/track/5ChkMS8OtdzJeqyybCc9R5?utm_source=generator"
+                loading="lazy"
+                allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+              ></iframe>
+            </div>
             <div class="timeline-bar" style="--chorus-pos: 29.6%;">
               <span class="timeline-marker">Chorus @ 1:27</span>
             </div>
           </article>
-          <article class="comparison-column">
+          <article class="comparison-column comparison-column-right" data-comparison-side="right">
             <p class="comparison-year accent">2024</p>
             <h2>Die With A Smile</h2>
             <p>Lady Gaga &amp; Bruno Mars</p>
-            <iframe
-              title="Spotify embed: Die With A Smile"
-              src="https://open.spotify.com/embed/track/2plbrEY59IikOBgBGLjaoe?utm_source=generator"
-              loading="lazy"
-              allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-            ></iframe>
+            <span class="play-hover-label">▶ Click to play</span>
+            <div class="comparison-embed">
+              <iframe
+                title="Spotify embed: Die With A Smile"
+                src="https://open.spotify.com/embed/track/2plbrEY59IikOBgBGLjaoe?utm_source=generator"
+                loading="lazy"
+                allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+              ></iframe>
+            </div>
             <div class="timeline-bar" style="--chorus-pos: 17.9%;">
               <span class="timeline-marker">Chorus @ 0:45</span>
             </div>
@@ -2255,6 +2474,17 @@
         });
       }
 
+      const yValues = values.filter(Number.isFinite);
+      if (state.selectedSong && Number.isFinite(state.selectedSong.duration)) {
+        yValues.push(state.selectedSong.duration);
+      }
+      const yExtent = d3.extent(yValues);
+      const ySpread = (yExtent[1] - yExtent[0]) || 0.5;
+      const yPad = ySpread * 0.12;
+      const yRange = Number.isFinite(yExtent[0]) && Number.isFinite(yExtent[1])
+        ? [Math.max(0, yExtent[0] - yPad), yExtent[1] + yPad]
+        : undefined;
+
       const layout = {
         margin: { t: 40, r: 18, b: 55, l: 55 },
         paper_bgcolor: "rgba(0,0,0,0)",
@@ -2280,6 +2510,7 @@
         },
         yaxis: {
           title: "Average Hit Duration (minutes)",
+          range: yRange,
           gridcolor: "#3f3f46",
           linecolor: "#3f3f46",
           tickfont: { color: "#a1a1aa" },
@@ -2334,8 +2565,57 @@
           marker: { color: "#f87171", line: { color: "#ef4444", width: 1 } },
           xbins: { size: 0.25 },
           hovertemplate: "Duration bin: %{x:.2f} min<br>Share of hits: %{y:.2%}<extra></extra>"
-        }
+          }
       ];
+
+      const binSize = 0.25;
+      const selectedSongInScope =
+        state.selectedSong &&
+        Number.isFinite(state.selectedSong.duration) &&
+        (state.selectedYear === null || state.selectedSong.year === state.selectedYear);
+
+      let selectedBinAnnotation = null;
+      if (selectedSongInScope) {
+        const songDur = state.selectedSong.duration;
+        const binStart = Math.floor(songDur / binSize) * binSize;
+        const binEnd = binStart + binSize;
+        const binMid = binStart + binSize / 2;
+        const allBinCount = allDurations.filter(value => value >= binStart && value < binEnd).length;
+        const hitBinCount = hitDurations.filter(value => value >= binStart && value < binEnd).length;
+        const allShare = allDurations.length ? allBinCount / allDurations.length : 0;
+        const hitShare = hitDurations.length ? hitBinCount / hitDurations.length : 0;
+        const markerHeight = Math.max(allShare, hitShare, 0.005);
+
+        traces.push({
+          type: "bar",
+          name: "Selected song bin",
+          x: [binMid],
+          y: [markerHeight],
+          width: binSize,
+          marker: {
+            color: "rgba(250, 204, 21, 0.16)",
+            line: { color: "#facc15", width: 3 }
+          },
+          hovertemplate:
+            `${state.selectedSong.trackName || "Selected song"}<br>` +
+            `${binStart.toFixed(2)}-${binEnd.toFixed(2)} min bin<extra></extra>`,
+          showlegend: false
+        });
+
+        selectedBinAnnotation = {
+          x: binMid,
+          y: markerHeight,
+          xref: "x",
+          yref: "y",
+          text: "your song",
+          showarrow: true,
+          arrowhead: 2,
+          ax: 0,
+          ay: -34,
+          font: { color: "#facc15", size: 11, family: "Space Grotesk, sans-serif" },
+          arrowcolor: "#facc15"
+        };
+      }
 
       const layout = {
         barmode: "overlay",
@@ -2390,6 +2670,9 @@
       }] : [];
 
       layout.shapes = medianShape;
+      if (selectedBinAnnotation) {
+        layout.annotations = [selectedBinAnnotation];
+      }
 
       Plotly.react(ids.chart2, traces, layout, { responsive: true, displayModeBar: false });
 
@@ -2929,6 +3212,7 @@
       renderSelectedSongCard(song);
       renderRadarChart(song);
       renderChart1();
+      renderChart2();
       renderCompactCharts();
     }
 
@@ -3233,6 +3517,9 @@
             iframe.src = `https://open.spotify.com/embed/track/${trackId}?utm_source=generator`;
           }
           bar.classList.toggle("is-open");
+          if (typeof window.setupSpotifyClickCatchers === "function") {
+            setTimeout(window.setupSpotifyClickCatchers, 300);
+          }
         });
       });
     }
@@ -3501,5 +3788,154 @@
       document.body.innerHTML = `<main style='padding:20px;font-family:sans-serif;'>Failed to load CSV data: ${msg}<br><br>Please run a local web server from this project folder and open <code>http://localhost:8000/index.html</code>.</main>`;
     });
   </script>
+  <script>
+    window.addEventListener("DOMContentLoaded", () => {
+      const comparisonSlide = document.getElementById("slide-comparison");
+      const comparisonColumns = document.querySelectorAll("#slide-comparison .comparison-column");
+
+      comparisonColumns.forEach(column => {
+        const side = column.dataset.comparisonSide;
+        const slideClass = side === "left" ? "is-left-hovered" : "is-right-hovered";
+
+        column.addEventListener("mouseenter", () => {
+          column.classList.add("is-hovered");
+          comparisonSlide.classList.add(slideClass);
+        });
+
+        column.addEventListener("mouseleave", () => {
+          column.classList.remove("is-hovered");
+          comparisonSlide.classList.remove(slideClass);
+        });
+      });
+
+      const bar = document.getElementById("now-playing-bar");
+      const stopBtn = document.getElementById("np-stop-btn");
+
+      if (!bar || !stopBtn) return;
+      setTimeout(() => {
+        document.body.appendChild(bar);
+      }, 1200);
+
+      const musicState = {
+        isPlaying: false,
+        activeSlideId: null
+      };
+
+      function showBar() {
+        bar.classList.add("visible");
+      }
+
+      function hideBar() {
+        bar.classList.remove("visible");
+      }
+
+      function markPlayingFromElement(element) {
+        const slide = element.closest(".slide");
+        musicState.activeSlideId = slide ? slide.id : null;
+        musicState.isPlaying = true;
+        showBar();
+      }
+
+      function setupSpotifyClickCatchers() {
+        document
+          .querySelectorAll('iframe[src*="open.spotify.com"]')
+          .forEach(frame => {
+            const wrapper = frame.closest(".comparison-embed, .embed-wrap, .era-audio-bar");
+            if (!wrapper) return;
+            if (wrapper.dataset.spotifyCatcherDisabled === "true") return;
+            if (wrapper.querySelector(".spotify-click-catcher")) return;
+
+            if (getComputedStyle(wrapper).position === "static") {
+              wrapper.style.position = "relative";
+            }
+
+            const catcher = document.createElement("div");
+            catcher.className = "spotify-click-catcher";
+            catcher.style.cssText = wrapper.classList.contains("era-audio-bar")
+              ? "position:absolute;left:0;right:0;bottom:0;height:152px;z-index:10;cursor:pointer;"
+              : "position:absolute;inset:0;z-index:10;cursor:pointer;";
+
+            catcher.addEventListener("click", () => {
+              wrapper.dataset.spotifyCatcherDisabled = "true";
+              markPlayingFromElement(frame);
+              catcher.remove();
+            }, { once: true });
+
+            wrapper.appendChild(catcher);
+          });
+      }
+      window.setupSpotifyClickCatchers = setupSpotifyClickCatchers;
+
+      document.querySelectorAll(".era-play").forEach(button => {
+        button.addEventListener("click", () => {
+          markPlayingFromElement(button);
+          setTimeout(setupSpotifyClickCatchers, 300);
+        });
+      });
+
+      setupSpotifyClickCatchers();
+
+      const catcherObserver = new MutationObserver(setupSpotifyClickCatchers);
+      catcherObserver.observe(document.body, {
+        attributes: true,
+        childList: true,
+        subtree: true,
+        attributeFilter: ["src"]
+      });
+
+      stopBtn.addEventListener("click", () => {
+        document
+          .querySelectorAll('iframe[src*="open.spotify.com"]')
+          .forEach(frame => {
+            const wrapper = frame.closest(".comparison-embed, .embed-wrap, .era-audio-bar");
+            if (wrapper) {
+              delete wrapper.dataset.spotifyCatcherDisabled;
+            }
+            const src = frame.src;
+            frame.src = "";
+            requestAnimationFrame(() => {
+              frame.src = src;
+            });
+          });
+
+        musicState.isPlaying = false;
+        musicState.activeSlideId = null;
+        hideBar();
+
+        setTimeout(setupSpotifyClickCatchers, 200);
+      });
+
+      const slides = document.querySelectorAll(".slide");
+      if (slides.length > 0) {
+        const slideObserver = new IntersectionObserver(entries => {
+          entries.forEach(entry => {
+            if (
+              !entry.isIntersecting &&
+              entry.target.id === musicState.activeSlideId &&
+              musicState.isPlaying
+            ) {
+              showBar();
+            }
+            if (!entry.isIntersecting) return;
+            const id = entry.target.id;
+            if (id === musicState.activeSlideId) {
+              hideBar();
+            } else if (musicState.isPlaying) {
+              showBar();
+            }
+          });
+        }, { threshold: 0.6 });
+
+        slides.forEach(slide => slideObserver.observe(slide));
+      }
+    });
+  </script>
+  <div id="now-playing-bar" aria-live="polite">
+    <span class="np-icon">♪</span>
+    <span class="np-label">Music may still be playing</span>
+    <button id="np-stop-btn" aria-label="Stop music">
+      ■ Stop
+    </button>
+  </div>
 </body>
 </html>
