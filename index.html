@@ -2293,7 +2293,7 @@
           <div class="row">
             <div class="slider-wrap">
               <label for="hitThreshold">Hit Threshold: Top <span id="thresholdValue">10</span>% by <code>spotify_popularity</code> (within each year)</label>
-              <input id="hitThreshold" type="range" min="5" max="100" step="1" value="10" />
+              <input id="hitThreshold" type="range" min="3" max="30" step="1" value="10" />
             </div>
           </div>
           <div class="row">
@@ -2415,6 +2415,7 @@
       hitPercent: 10,
       hitIndex: new Set(),
       yearlyStats: [],
+      aggregates: null,
       activeTrack: null,
       activeFeature: "energy",
       selectedSong: null,
@@ -2578,6 +2579,37 @@
     }
 
     function computeHitsAndYearStats() {
+      if (state.aggregates) {
+        const threshold = getAggregateThreshold();
+        const hitSet = new Set();
+        const stats = [];
+        const years = Object.keys(state.aggregates.years || {})
+          .map(Number)
+          .sort((a, b) => a - b);
+
+        for (const year of years) {
+          const yearAgg = state.aggregates.years[String(year)];
+          const hitAgg = yearAgg?.thresholds?.[String(threshold)];
+          if (!yearAgg || !hitAgg) continue;
+          const cutoff = hitAgg.cutoff;
+          state.songs
+            .filter(d => d.year === year && d.popularity >= cutoff)
+            .forEach(song => hitSet.add(song.idx));
+
+          stats.push({
+            year,
+            meanHitDuration: hitAgg.meanHitDuration,
+            total: yearAgg.all.total,
+            hits: hitAgg.hits,
+            cutoff
+          });
+        }
+
+        state.hitIndex = hitSet;
+        state.yearlyStats = stats;
+        return;
+      }
+
       const groups = buildYearGroups(state.songs);
       const hitSet = new Set();
       const stats = [];
@@ -2611,6 +2643,67 @@
 
     function getScopedHitSongs() {
       return getScopedSongs().filter(d => state.hitIndex.has(d.idx));
+    }
+
+    function getAggregateThreshold() {
+      if (!state.aggregates?.thresholds?.length) return state.hitPercent;
+      const thresholds = state.aggregates.thresholds.map(Number);
+      if (thresholds.includes(state.hitPercent)) return state.hitPercent;
+      return thresholds.reduce((best, current) =>
+        Math.abs(current - state.hitPercent) < Math.abs(best - state.hitPercent) ? current : best
+      , thresholds[0]);
+    }
+
+    function getAggregateScope() {
+      if (!state.aggregates) return null;
+      const threshold = getAggregateThreshold();
+      const bucket = state.selectedYear === null
+        ? state.aggregates.global
+        : state.aggregates.years?.[String(state.selectedYear)];
+      if (!bucket) return null;
+      const hit = bucket.thresholds?.[String(threshold)];
+      if (!bucket.all || !hit) return null;
+      return { all: bucket.all, hit, threshold };
+    }
+
+    function histToProbabilityRows(hist, total) {
+      if (!state.aggregates || !Array.isArray(hist) || !total) return [];
+      const binSize = state.aggregates.binSize || 0.25;
+      return hist.map((count, index) => ({
+        x: index * binSize + binSize / 2,
+        y: count / total,
+        count
+      })).filter(row => row.count > 0);
+    }
+
+    function aggregateFeatureValues(featureKey) {
+      if (!state.aggregates) return [];
+      const threshold = getAggregateThreshold();
+      return Object.keys(state.aggregates.years || {})
+        .map(Number)
+        .sort((a, b) => a - b)
+        .map(year => {
+          const yearAgg = state.aggregates.years[String(year)];
+          const hitAgg = yearAgg?.thresholds?.[String(threshold)];
+          return {
+            year,
+            allValue: yearAgg?.all?.features?.[featureKey],
+            hitValue: hitAgg?.features?.[featureKey]
+          };
+        });
+    }
+
+    function aggregateHitFeatureSeries(featureKey) {
+      if (!state.aggregates) return [];
+      const threshold = getAggregateThreshold();
+      return Object.keys(state.aggregates.years || {})
+        .map(Number)
+        .sort((a, b) => a - b)
+        .map(year => {
+          const hitAgg = state.aggregates.years[String(year)]?.thresholds?.[String(threshold)];
+          return { year, value: hitAgg?.features?.[featureKey] };
+        })
+        .filter(d => Number.isFinite(d.value));
     }
 
     function platformMilestone() {
@@ -2800,7 +2893,176 @@
       });
     }
 
+    function renderAggregateChart2() {
+      const scope = getAggregateScope();
+      if (!scope) return false;
+
+      const binSize = state.aggregates.binSize || 0.25;
+      const titleSuffix = state.selectedYear === null ? "All Years" : `Year ${state.selectedYear}`;
+      const allRows = histToProbabilityRows(scope.all.hist, scope.all.total);
+      const hitTotal = scope.hit.hits || scope.hit.total;
+      const hitRows = histToProbabilityRows(scope.hit.hist, hitTotal);
+      const med = scope.all.medianDuration;
+
+      const traces = [
+        {
+          type: "bar",
+          name: "All Songs",
+          x: allRows.map(d => d.x),
+          y: allRows.map(d => d.y),
+          width: binSize,
+          opacity: 0.45,
+          marker: { color: "#38bdf8", line: { color: "#0ea5e9", width: 1 } },
+          hovertemplate: "Duration bin: %{x:.2f} min<br>Share of all songs: %{y:.2%}<extra></extra>"
+        },
+        {
+          type: "bar",
+          name: `Hits (Top ${scope.threshold}%)`,
+          x: hitRows.map(d => d.x),
+          y: hitRows.map(d => d.y),
+          width: binSize,
+          opacity: 0.8,
+          marker: { color: "#f87171", line: { color: "#ef4444", width: 1 } },
+          hovertemplate: "Duration bin: %{x:.2f} min<br>Share of hits: %{y:.2%}<extra></extra>"
+        }
+      ];
+
+      const selectedSongInScope =
+        state.selectedSong &&
+        Number.isFinite(state.selectedSong.duration) &&
+        (state.selectedYear === null || state.selectedSong.year === state.selectedYear);
+
+      let selectedBinAnnotation = null;
+      let selectedBinShape = null;
+      if (selectedSongInScope) {
+        const songDur = state.selectedSong.duration;
+        const binIndex = Math.min(
+          scope.all.hist.length - 1,
+          Math.max(0, Math.floor(songDur / binSize))
+        );
+        const binStart = binIndex * binSize;
+        const binEnd = binStart + binSize;
+        const binMid = binStart + binSize / 2;
+        const allShare = scope.all.total ? (scope.all.hist[binIndex] || 0) / scope.all.total : 0;
+        const hitShare = hitTotal ? (scope.hit.hist[binIndex] || 0) / hitTotal : 0;
+        const markerHeight = Math.max(allShare, hitShare, 0.005);
+
+        selectedBinShape = {
+          type: "rect",
+          xref: "x",
+          yref: "paper",
+          x0: binStart,
+          x1: binEnd,
+          y0: 0,
+          y1: 1,
+          fillcolor: "rgba(250, 204, 21, 0.12)",
+          line: { color: "#facc15", width: 2 },
+          layer: "above"
+        };
+
+        traces.push({
+          type: "bar",
+          name: "Selected song bin",
+          x: [binMid],
+          y: [markerHeight],
+          width: binSize,
+          marker: {
+            color: "rgba(250, 204, 21, 0.16)",
+            line: { color: "#facc15", width: 3 }
+          },
+          hovertemplate:
+            `${state.selectedSong.trackName || "Selected song"}<br>` +
+            `${binStart.toFixed(2)}-${binEnd.toFixed(2)} min bin<extra></extra>`,
+          showlegend: false
+        });
+
+        selectedBinAnnotation = {
+          x: binMid,
+          y: 0.98,
+          xref: "x",
+          yref: "paper",
+          text: "selected song duration",
+          showarrow: false,
+          font: { color: "#facc15", size: 11, family: "Space Grotesk, sans-serif" },
+          bgcolor: "rgba(17, 17, 24, 0.86)",
+          bordercolor: "rgba(250, 204, 21, 0.55)",
+          borderwidth: 1,
+          borderpad: 4
+        };
+      }
+
+      const layout = {
+        barmode: "overlay",
+        margin: { t: 108, r: 18, b: 65, l: 70 },
+        paper_bgcolor: "rgba(0,0,0,0)",
+        plot_bgcolor: "rgba(0,0,0,0)",
+        font: { color: "#d4d4d8", family: "Space Grotesk, sans-serif" },
+        title: {
+          text: `Song Length Distribution (${titleSuffix})`,
+          font: { size: 18, family: "Space Grotesk, sans-serif", color: "#ffffff" },
+          x: 0.5,
+          xanchor: "center",
+          y: 0.965,
+          yanchor: "top",
+          pad: { t: 0, b: 14 }
+        },
+        xaxis: {
+          title: "Track Duration (minutes)",
+          gridcolor: "#3f3f46",
+          linecolor: "#3f3f46",
+          tickfont: { color: "#a1a1aa" },
+          titlefont: { color: "#a1a1aa" },
+          range: [0, state.aggregates.histMax || 15]
+        },
+        yaxis: {
+          title: "Share of Tracks",
+          tickformat: ".0%",
+          gridcolor: "#3f3f46",
+          linecolor: "#3f3f46",
+          tickfont: { color: "#a1a1aa" },
+          titlefont: { color: "#a1a1aa" }
+        },
+        legend: {
+          orientation: "h",
+          y: 1.045,
+          yanchor: "bottom",
+          x: 0.5,
+          xanchor: "center",
+          bgcolor: "rgba(17,17,24,0.72)",
+          bordercolor: "#3f3f46",
+          borderwidth: 1
+        }
+      };
+
+      const medianShape = Number.isFinite(med) ? [{
+        type: "line",
+        x0: med,
+        x1: med,
+        y0: 0,
+        y1: 1,
+        yref: "paper",
+        line: { color: "#d4d4d8", width: 2, dash: "dot" }
+      }] : [];
+
+      layout.shapes = selectedBinShape ? [...medianShape, selectedBinShape] : medianShape;
+      if (selectedBinAnnotation) layout.annotations = [selectedBinAnnotation];
+
+      Plotly.react(ids.chart2, traces, layout, { responsive: true, displayModeBar: false });
+
+      ids.selectionLabel.textContent = state.selectedYear === null
+        ? "Chart 2 Scope: All years"
+        : `Chart 2 Scope: ${state.selectedYear}`;
+      ids.countLabel.textContent = `n = ${scope.all.total.toLocaleString()} songs, ${hitTotal.toLocaleString()} hits`;
+      ids.clearBtn.disabled = state.selectedYear === null;
+      ids.chart2Caption.textContent = state.selectedYear === null
+        ? `Chart 2: Distribution of track duration for all songs. Median = ${med.toFixed(2)} min.`
+        : `Chart 2: Distribution of track duration for songs released in ${state.selectedYear}. Median = ${med.toFixed(2)} min.`;
+      return true;
+    }
+
     function renderChart2() {
+      if (state.aggregates && renderAggregateChart2()) return;
+
       const scopedSongs = getScopedSongs();
       const scopedHits = scopedSongs.filter(d => state.hitIndex.has(d.idx));
       const allDurations = scopedSongs.map(d => d.duration);
@@ -3020,18 +3282,20 @@
       document
         .getElementById("slide-features")
         ?.setAttribute("data-active-feature", state.activeFeature);
-      const groups = buildYearGroups(state.songs);
-      const values = [];
-
-      for (const stat of state.yearlyStats) {
-        const rows = groups.get(stat.year) || [];
-        const hits = rows.filter(d => state.hitIndex.has(d.idx));
-        values.push({
-          year: stat.year,
-          allValue: featureAverage(rows, config),
-          hitValue: featureAverage(hits, config)
-        });
-      }
+      const values = state.aggregates
+        ? aggregateFeatureValues(state.activeFeature)
+        : (() => {
+            const groups = buildYearGroups(state.songs);
+            return state.yearlyStats.map(stat => {
+              const rows = groups.get(stat.year) || [];
+              const hits = rows.filter(d => state.hitIndex.has(d.idx));
+              return {
+                year: stat.year,
+                allValue: featureAverage(rows, config),
+                hitValue: featureAverage(hits, config)
+              };
+            });
+          })();
 
       const finiteHitValues = values.filter(d => Number.isFinite(d.hitValue));
       const finiteAllValues = values.filter(d => Number.isFinite(d.allValue));
@@ -3301,15 +3565,23 @@
       const svgs = document.querySelectorAll(".chapter-bg-viz");
       if (!svgs.length || !state.yearlyStats.length) return;
 
-      const groups = buildYearGroups(state.songs);
       const explicitByYear = new Map();
-      for (const stat of state.yearlyStats) {
-        const rows = groups.get(stat.year) || [];
-        const hits = rows.filter(d => state.hitIndex.has(d.idx));
-        explicitByYear.set(
-          stat.year,
-          hits.length ? hits.filter(d => d.explicit).length / hits.length : 0
-        );
+      if (state.aggregates) {
+        const threshold = getAggregateThreshold();
+        for (const stat of state.yearlyStats) {
+          const hitAgg = state.aggregates.years?.[String(stat.year)]?.thresholds?.[String(threshold)];
+          explicitByYear.set(stat.year, hitAgg?.explicitShare || 0);
+        }
+      } else {
+        const groups = buildYearGroups(state.songs);
+        for (const stat of state.yearlyStats) {
+          const rows = groups.get(stat.year) || [];
+          const hits = rows.filter(d => state.hitIndex.has(d.idx));
+          explicitByYear.set(
+            stat.year,
+            hits.length ? hits.filter(d => d.explicit).length / hits.length : 0
+          );
+        }
       }
 
       const durationValues = state.yearlyStats.map(d => d.meanHitDuration).filter(Number.isFinite);
@@ -3777,28 +4049,31 @@
 
     function renderSummarySparklines() {
       if (!ids.summaryGrid || !state.yearlyStats.length) return;
-      const groups = buildYearGroups(state.songs);
       const metrics = [
-        { key: "duration", label: "Duration", read: song => song.duration },
-        { key: "explicit", label: "Explicit", read: song => song.explicit ? 1 : 0 },
-        { key: "energy", label: "Energy", read: song => song.features.energy },
-        { key: "danceability", label: "Danceability", read: song => song.features.danceability },
-        { key: "valence", label: "Valence", read: song => song.features.valence },
-        { key: "acousticness", label: "Acousticness", read: song => song.features.acousticness },
-        { key: "tempo", label: "Tempo", read: song => song.features.tempo },
-        { key: "popularity", label: "Popularity", read: song => song.popularity }
+        { key: "duration", label: "Duration", read: song => song.duration, aggregateKey: "duration" },
+        { key: "explicit", label: "Explicit", read: song => song.explicit ? 1 : 0, aggregateKey: "explicit" },
+        { key: "energy", label: "Energy", read: song => song.features.energy, aggregateKey: "energy" },
+        { key: "danceability", label: "Danceability", read: song => song.features.danceability, aggregateKey: "danceability" },
+        { key: "valence", label: "Valence", read: song => song.features.valence, aggregateKey: "valence" },
+        { key: "acousticness", label: "Acousticness", read: song => song.features.acousticness, aggregateKey: "acousticness" },
+        { key: "tempo", label: "Tempo", read: song => song.features.tempo, aggregateKey: "tempo" }
       ];
 
       ids.summaryGrid.innerHTML = "";
       metrics.forEach(metric => {
-        const values = state.yearlyStats.map(stat => {
-          const rows = groups.get(stat.year) || [];
-          const hits = rows.filter(d => state.hitIndex.has(d.idx));
-          return {
-            year: stat.year,
-            value: featureAverage(hits, metric)
-          };
-        }).filter(d => Number.isFinite(d.value));
+        const values = state.aggregates
+          ? aggregateHitFeatureSeries(metric.aggregateKey)
+          : (() => {
+              const groups = buildYearGroups(state.songs);
+              return state.yearlyStats.map(stat => {
+                const rows = groups.get(stat.year) || [];
+                const hits = rows.filter(d => state.hitIndex.has(d.idx));
+                return {
+                  year: stat.year,
+                  value: featureAverage(hits, metric)
+                };
+              }).filter(d => Number.isFinite(d.value));
+            })();
 
         const first = values[0]?.value;
         const last = values[values.length - 1]?.value;
@@ -3844,21 +4119,30 @@
 
     function renderCompactCharts() {
       if (!ids.compactChartBoard || !state.yearlyStats.length) return;
-      const groups = buildYearGroups(state.songs);
       const durationSeries = state.yearlyStats.map(d => ({ year: d.year, value: d.meanHitDuration }));
-      const explicitSeries = state.yearlyStats.map(stat => {
-        const rows = groups.get(stat.year) || [];
-        const hits = rows.filter(d => state.hitIndex.has(d.idx));
-        return {
-          year: stat.year,
-          value: hits.length ? hits.filter(d => d.explicit).length / hits.length : 0
-        };
-      });
-      const featureSeries = state.yearlyStats.map(stat => {
-        const rows = groups.get(stat.year) || [];
-        const hits = rows.filter(d => state.hitIndex.has(d.idx));
-        return { year: stat.year, value: featureAverage(hits, FEATURE_CONFIG.energy) };
-      });
+      const explicitSeries = state.aggregates
+        ? aggregateHitFeatureSeries("explicit")
+        : (() => {
+            const groups = buildYearGroups(state.songs);
+            return state.yearlyStats.map(stat => {
+              const rows = groups.get(stat.year) || [];
+              const hits = rows.filter(d => state.hitIndex.has(d.idx));
+              return {
+                year: stat.year,
+                value: hits.length ? hits.filter(d => d.explicit).length / hits.length : 0
+              };
+            });
+          })();
+      const featureSeries = state.aggregates
+        ? aggregateHitFeatureSeries("energy")
+        : (() => {
+            const groups = buildYearGroups(state.songs);
+            return state.yearlyStats.map(stat => {
+              const rows = groups.get(stat.year) || [];
+              const hits = rows.filter(d => state.hitIndex.has(d.idx));
+              return { year: stat.year, value: featureAverage(hits, FEATURE_CONFIG.energy) };
+            });
+          })();
       const charts = [
         { title: "Duration", color: "#38bdf8", values: durationSeries },
         { title: "Explicit Share", color: "#f87171", values: explicitSeries },
@@ -4153,6 +4437,15 @@
     }
 
     async function init() {
+      try {
+        const aggregateResponse = await fetch("tracks_features_aggregates.json");
+        if (aggregateResponse.ok) {
+          state.aggregates = await aggregateResponse.json();
+        }
+      } catch (err) {
+        console.warn("Aggregate data unavailable; falling back to row-based chart calculations.", err);
+      }
+
       const csvCandidates = [
         "tracks_features_pages.csv",
         "tracks_features_with_popularity_viz.csv",
@@ -4283,14 +4576,22 @@
         if (row.year < minYear) minYear = row.year;
         if (row.year > maxYear) maxYear = row.year;
       }
-      state.minYear = Number.isFinite(minYear) ? minYear : null;
-      state.maxYear = Number.isFinite(maxYear) ? maxYear : null;
+      state.minYear = Number.isFinite(state.aggregates?.minYear)
+        ? state.aggregates.minYear
+        : Number.isFinite(minYear) ? minYear : null;
+      state.maxYear = Number.isFinite(state.aggregates?.maxYear)
+        ? state.aggregates.maxYear
+        : Number.isFinite(maxYear) ? maxYear : null;
       if (proxyCount > 0 && apiCount === 0) {
         ids.footNote.textContent =
           "Note: Spotify API popularity was unavailable in this environment, so popularity is currently a transparent proxy score derived from audio features. Hit threshold behavior still works the same way.";
       } else if (apiCount > 0) {
         ids.footNote.textContent =
           "Note: This interaction uses Spotify API popularity (0-100) where available. \"Hit\" is defined by your chosen popularity percentile in each year.";
+      }
+      if (state.aggregates) {
+        ids.footNote.textContent =
+          "Note: Charts use precomputed full-catalog aggregates for speed. Random tracks and local search use a smaller interaction sample.";
       }
       renderAll();
     }

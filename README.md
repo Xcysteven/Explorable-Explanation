@@ -37,6 +37,7 @@ The frontend is static and can be served by GitHub Pages.
 ```text
 .
 ├── index.html
+├── tracks_features_aggregates.json
 ├── tracks_features_pages.csv
 ├── spotify_data clean.csv
 ├── assets/
@@ -53,7 +54,18 @@ The frontend is static and can be served by GitHub Pages.
 
 ## Data Files
 
-The deployed site loads data in this order:
+The deployed site uses two browser-facing data files:
+
+```text
+tracks_features_aggregates.json
+tracks_features_pages.csv
+```
+
+`tracks_features_aggregates.json` contains precomputed full-catalog statistics for charts, distributions, counts, and feature trends. This keeps the charts statistically grounded without forcing the browser to parse hundreds of thousands of raw rows.
+
+`tracks_features_pages.csv` is a smaller song-level interaction sample used for random tracks and local search.
+
+If the aggregate JSON is missing, the site falls back to row-based calculation from CSV files in this order:
 
 1. `tracks_features_pages.csv`
 2. `tracks_features_with_popularity_viz.csv`
@@ -62,6 +74,7 @@ The deployed site loads data in this order:
 For GitHub Pages, the intended committed dataset is:
 
 ```text
+tracks_features_aggregates.json
 tracks_features_pages.csv
 ```
 
@@ -105,7 +118,7 @@ tempo
 
 A hit is defined operationally as the top X percent of tracks by `spotify_popularity` within each release year.
 
-The default threshold is top 10 percent. The slider lets users broaden or narrow that definition. This matters because the project should not depend on one fixed cutoff to make its argument.
+The default threshold is top 10 percent. The deployed slider is constrained to top 3 percent through top 30 percent so the page can use compact precomputed aggregates instead of a large raw CSV.
 
 ## Run Locally
 
@@ -166,7 +179,8 @@ Build the smaller GitHub Pages dataset:
 python3 scripts/build_pages_dataset.py \
   --input tracks_features_with_popularity_viz.csv \
   --feature-input tracks_features.csv \
-  --output tracks_features_pages.csv
+  --output tracks_features_pages.csv \
+  --aggregate-output tracks_features_aggregates.json
 ```
 
 Serve locally again and confirm the page loads:
@@ -189,6 +203,7 @@ Commit the static site files:
 
 ```text
 index.html
+tracks_features_aggregates.json
 tracks_features_pages.csv
 assets/
 scripts/
