@@ -39,13 +39,17 @@ The frontend is static and can be served by GitHub Pages.
 ├── index.html
 ├── tracks_features_aggregates.json
 ├── tracks_features_pages.csv
+├── search-index/
+│   ├── manifest.json
+│   └── *.csv
 ├── spotify_data clean.csv
 ├── assets/
 │   ├── era-classic.mp4
 │   └── era-modern.mp4
 ├── scripts/
 │   ├── enrich_tracks_popularity.py
-│   └── build_pages_dataset.py
+│   ├── build_pages_dataset.py
+│   └── build_search_index.py
 ├── chorus.ipynb
 ├── main.ipynb
 ├── LICENSE
@@ -54,16 +58,19 @@ The frontend is static and can be served by GitHub Pages.
 
 ## Data Files
 
-The deployed site uses two browser-facing data files:
+The deployed site uses three browser-facing data outputs:
 
 ```text
 tracks_features_aggregates.json
 tracks_features_pages.csv
+search-index/
 ```
 
 `tracks_features_aggregates.json` contains precomputed full-catalog statistics for charts, distributions, counts, and feature trends. This keeps the charts statistically grounded without forcing the browser to parse hundreds of thousands of raw rows.
 
 `tracks_features_pages.csv` is a smaller song-level interaction sample used for random tracks and local search.
+
+`search-index/` contains lazy-loaded song search shards generated from the full enriched dataset. The browser does not download these files on initial page load. It only fetches the shard needed for a search query, which lets the final search section use the large feature dataset without crashing the page during startup.
 
 If the aggregate JSON is missing, the site falls back to row-based calculation from CSV files in this order:
 
@@ -76,6 +83,7 @@ For GitHub Pages, the intended committed dataset is:
 ```text
 tracks_features_aggregates.json
 tracks_features_pages.csv
+search-index/
 ```
 
 Large local data files are intentionally ignored by Git:
@@ -183,6 +191,19 @@ python3 scripts/build_pages_dataset.py \
   --aggregate-output tracks_features_aggregates.json
 ```
 
+Build the lazy-loaded full search index:
+
+```bash
+python3 scripts/build_search_index.py \
+  --input tracks_features_with_popularity.csv \
+  --output-dir search-index \
+  --min-year 1980 \
+  --max-year 2020 \
+  --max-keys-per-row 2
+```
+
+The generated shard files are larger than the chart datasets, but they are split into many files so GitHub Pages serves only the relevant shard after a user searches. No single shard should exceed GitHub's 100 MB file limit with the current settings.
+
 Serve locally again and confirm the page loads:
 
 ```bash
@@ -193,7 +214,7 @@ python3 -m http.server 8000
 
 Do not commit real Spotify API credentials.
 
-The enrichment script reads credentials from command-line arguments or environment variables. The client-side constants in `index.html` are placeholders and should stay placeholders unless the project is reworked to use a safer backend or proxy.
+The enrichment script reads credentials from command-line arguments or environment variables.
 
 For a public GitHub Pages deployment, treat browser-visible credentials as public. If live Spotify lookup is required, move that request behind a server-side endpoint.
 
@@ -205,6 +226,7 @@ Commit the static site files:
 index.html
 tracks_features_aggregates.json
 tracks_features_pages.csv
+search-index/
 assets/
 scripts/
 README.md

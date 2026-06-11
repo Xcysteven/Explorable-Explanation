@@ -1,0 +1,236 @@
+{
+  "schemaVersion": 1,
+  "minYear": 1980,
+  "maxYear": 2020,
+  "uniqueTracks": 1165557,
+  "shards": [
+    {
+      "key": "0",
+      "file": "0.csv",
+      "rows": 396,
+      "bytes": 48979
+    },
+    {
+      "key": "1",
+      "file": "1.csv",
+      "rows": 3279,
+      "bytes": 404505
+    },
+    {
+      "key": "2",
+      "file": "2.csv",
+      "rows": 3117,
+      "bytes": 390175
+    },
+    {
+      "key": "3",
+      "file": "3.csv",
+      "rows": 1859,
+      "bytes": 230776
+    },
+    {
+      "key": "4",
+      "file": "4.csv",
+      "rows": 1856,
+      "bytes": 229453
+    },
+    {
+      "key": "5",
+      "file": "5.csv",
+      "rows": 924,
+      "bytes": 113674
+    },
+    {
+      "key": "6",
+      "file": "6.csv",
+      "rows": 941,
+      "bytes": 120539
+    },
+    {
+      "key": "7",
+      "file": "7.csv",
+      "rows": 778,
+      "bytes": 95705
+    },
+    {
+      "key": "8",
+      "file": "8.csv",
+      "rows": 1020,
+      "bytes": 126802
+    },
+    {
+      "key": "9",
+      "file": "9.csv",
+      "rows": 1051,
+      "bytes": 129178
+    },
+    {
+      "key": "a",
+      "file": "a.csv",
+      "rows": 144223,
+      "bytes": 20849193
+    },
+    {
+      "key": "b",
+      "file": "b.csv",
+      "rows": 157717,
+      "bytes": 21912033
+    },
+    {
+      "key": "c",
+      "file": "c.csv",
+      "rows": 141812,
+      "bytes": 19619922
+    },
+    {
+      "key": "cjk",
+      "file": "cjk.csv",
+      "rows": 3323,
+      "bytes": 432527
+    },
+    {
+      "key": "d",
+      "file": "d.csv",
+      "rows": 133939,
+      "bytes": 18385943
+    },
+    {
+      "key": "e",
+      "file": "e.csv",
+      "rows": 64143,
+      "bytes": 8884538
+    },
+    {
+      "key": "f",
+      "file": "f.csv",
+      "rows": 88785,
+      "bytes": 13116305
+    },
+    {
+      "key": "g",
+      "file": "g.csv",
+      "rows": 97798,
+      "bytes": 14828895
+    },
+    {
+      "key": "h",
+      "file": "h.csv",
+      "rows": 83977,
+      "bytes": 11746731
+    },
+    {
+      "key": "i",
+      "file": "i.csv",
+      "rows": 46580,
+      "bytes": 6416063
+    },
+    {
+      "key": "j",
+      "file": "j.csv",
+      "rows": 115134,
+      "bytes": 17759684
+    },
+    {
+      "key": "k",
+      "file": "k.csv",
+      "rows": 63672,
+      "bytes": 8549113
+    },
+    {
+      "key": "l",
+      "file": "l.csv",
+      "rows": 110282,
+      "bytes": 15465020
+    },
+    {
+      "key": "m",
+      "file": "m.csv",
+      "rows": 164809,
+      "bytes": 22720106
+    },
+    {
+      "key": "n",
+      "file": "n.csv",
+      "rows": 58810,
+      "bytes": 8023274
+    },
+    {
+      "key": "o",
+      "file": "o.csv",
+      "rows": 48415,
+      "bytes": 6523902
+    },
+    {
+      "key": "other",
+      "file": "other.csv",
+      "rows": 493,
+      "bytes": 70300
+    },
+    {
+      "key": "p",
+      "file": "p.csv",
+      "rows": 109951,
+      "bytes": 15877105
+    },
+    {
+      "key": "q",
+      "file": "q.csv",
+      "rows": 5172,
+      "bytes": 688585
+    },
+    {
+      "key": "r",
+      "file": "r.csv",
+      "rows": 110585,
+      "bytes": 15859609
+    },
+    {
+      "key": "s",
+      "file": "s.csv",
+      "rows": 214926,
+      "bytes": 30970425
+    },
+    {
+      "key": "t",
+      "file": "t.csv",
+      "rows": 184611,
+      "bytes": 24416228
+    },
+    {
+      "key": "u",
+      "file": "u.csv",
+      "rows": 14521,
+      "bytes": 1881286
+    },
+    {
+      "key": "v",
+      "file": "v.csv",
+      "rows": 44669,
+      "bytes": 7011676
+    },
+    {
+      "key": "w",
+      "file": "w.csv",
+      "rows": 70603,
+      "bytes": 10266353
+    },
+    {
+      "key": "x",
+      "file": "x.csv",
+      "rows": 4918,
+      "bytes": 676103
+    },
+    {
+      "key": "y",
+      "file": "y.csv",
+      "rows": 17202,
+      "bytes": 2285361
+    },
+    {
+      "key": "z",
+      "file": "z.csv",
+      "rows": 10592,
+      "bytes": 1386632
+    }
+  ]
+}

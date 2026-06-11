@@ -1858,6 +1858,16 @@
       text-align: left;
     }
 
+    .search-hint {
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      border-radius: 10px;
+      padding: 9px 10px;
+      background: rgba(56, 189, 248, 0.12);
+      color: #d4d4d8;
+      font-size: 13px;
+      text-align: left;
+    }
+
     .search-output {
       display: grid;
       grid-template-columns: 1.2fr 0.8fr;
@@ -2404,11 +2414,6 @@
   </main>
 
   <script>
-    const SPOTIFY_CLIENT_ID = "YOUR_CLIENT_ID_HERE";
-    const SPOTIFY_CLIENT_SECRET = "YOUR_CLIENT_SECRET_HERE";
-    let _spotifyToken = null;
-    let _spotifyTokenExp = 0;
-
     const state = {
       songs: [],
       selectedYear: null,
@@ -2416,6 +2421,9 @@
       hitIndex: new Set(),
       yearlyStats: [],
       aggregates: null,
+      searchShardCache: new Map(),
+      searchDebounceTimer: null,
+      searchRequestId: 0,
       activeTrack: null,
       activeFeature: "energy",
       selectedSong: null,
@@ -2423,6 +2431,8 @@
       minYear: null,
       maxYear: null
     };
+
+    const SEARCH_RESULT_LIMIT = 12;
 
     const ids = {
       slidesContainer: document.getElementById("slides-container"),
@@ -3760,10 +3770,215 @@
         const haystack = `${song.trackName} ${song.artistName}`.toLowerCase();
         if (haystack.includes(q)) {
           matches.push(song);
-          if (matches.length >= 5) break;
+          if (matches.length >= SEARCH_RESULT_LIMIT) break;
         }
       }
       return matches;
+    }
+
+    const SIMPLIFIED_TO_TRADITIONAL = {
+      "爱": "愛", "边": "邊", "变": "變", "长": "長", "车": "車", "尘": "塵",
+      "从": "從", "灯": "燈", "点": "點", "东": "東", "对": "對", "发": "發",
+      "风": "風", "广": "廣", "国": "國", "过": "過", "后": "後", "华": "華",
+      "欢": "歡", "会": "會", "间": "間", "见": "見", "将": "將", "节": "節",
+      "进": "進", "来": "來", "乐": "樂", "里": "裡", "恋": "戀", "梦": "夢",
+      "们": "們", "难": "難", "气": "氣", "亲": "親", "让": "讓", "声": "聲",
+      "时": "時", "说": "說", "台": "臺", "听": "聽", "万": "萬", "为": "為",
+      "无": "無", "现": "現", "学": "學", "阳": "陽", "样": "樣", "叶": "葉",
+      "义": "義", "阴": "陰", "拥": "擁", "与": "與", "云": "雲", "这": "這",
+      "种": "種", "钟": "鐘", "转": "轉"
+    };
+
+    function normalizeSearchText(value) {
+      return [...String(value || "").toLowerCase()]
+        .map(char => SIMPLIFIED_TO_TRADITIONAL[char] || char)
+        .join("")
+        .replace(/\s+/g, " ")
+        .trim();
+    }
+
+    function hasCjk(value) {
+      return /[\u4e00-\u9fff]/.test(value);
+    }
+
+    function searchShardKeys(query) {
+      const normalized = normalizeSearchText(query);
+      const keys = new Set();
+      const tokens = normalized.match(/[a-z0-9]+/g) || [];
+      tokens.forEach(token => {
+        if (token) keys.add(token[0]);
+      });
+      if (hasCjk(normalized)) keys.add("cjk");
+      if (!keys.size) keys.add("other");
+      return [...keys];
+    }
+
+    function splitCSVLine(line) {
+      const out = [];
+      let current = "";
+      let inQuotes = false;
+      for (let i = 0; i < line.length; i++) {
+        const ch = line[i];
+        if (ch === '"') {
+          if (inQuotes && line[i + 1] === '"') {
+            current += '"';
+            i++;
+          } else {
+            inQuotes = !inQuotes;
+          }
+        } else if (ch === "," && !inQuotes) {
+          out.push(current);
+          current = "";
+        } else {
+          current += ch;
+        }
+      }
+      out.push(current);
+      return out;
+    }
+
+    function parseSearchShard(raw) {
+      const lines = raw.trim().split(/\r?\n/);
+      if (lines.length < 2) return [];
+      const headers = splitCSVLine(lines[0]);
+      const index = Object.fromEntries(headers.map((header, i) => [header, i]));
+
+      function value(parts, key) {
+        return index[key] >= 0 ? parts[index[key]] : "";
+      }
+
+      function numberValue(parts, key) {
+        const parsed = Number(value(parts, key));
+        return Number.isFinite(parsed) ? parsed : null;
+      }
+
+      const songs = [];
+      for (let i = 1; i < lines.length; i++) {
+        const parts = splitCSVLine(lines[i]);
+        const durationMs = numberValue(parts, "duration_ms");
+        const year = numberValue(parts, "year");
+        const popularity = numberValue(parts, "spotify_popularity");
+        const trackId = value(parts, "id").trim();
+        if (!trackId || !Number.isFinite(durationMs) || !Number.isFinite(year)) continue;
+
+        const artistRaw = value(parts, "artists").trim();
+        const artistName = artistRaw.startsWith("[")
+          ? artistRaw.replace(/[\\[\\]']/g, "").split(",").map(s => s.trim()).filter(Boolean).join(", ")
+          : artistRaw;
+        const trackName = value(parts, "name").trim();
+
+        songs.push({
+          idx: `search-${trackId}`,
+          year,
+          duration: durationMs / 60000,
+          popularity: Number.isFinite(popularity) ? popularity : "n/a",
+          trackId,
+          trackName,
+          artistName,
+          explicit: value(parts, "explicit").trim().toLowerCase() === "true",
+          features: {
+            danceability: numberValue(parts, "danceability"),
+            energy: numberValue(parts, "energy"),
+            acousticness: numberValue(parts, "acousticness"),
+            valence: numberValue(parts, "valence"),
+            tempo: numberValue(parts, "tempo")
+          },
+          _searchText: normalizeSearchText(`${trackName} ${artistName}`)
+        });
+      }
+      return songs;
+    }
+
+    async function loadSearchShard(key) {
+      if (state.searchShardCache.has(key)) {
+        return state.searchShardCache.get(key);
+      }
+
+      const response = await fetch(`search-index/${encodeURIComponent(key)}.csv`);
+      if (!response.ok) {
+        state.searchShardCache.set(key, []);
+        return [];
+      }
+
+      const songs = parseSearchShard(await response.text());
+      state.searchShardCache.set(key, songs);
+      return songs;
+    }
+
+    async function searchFullIndex(query) {
+      const normalized = normalizeSearchText(query);
+      if (normalized.length < 2) return [];
+
+      const keys = searchShardKeys(query);
+      const shards = await Promise.all(keys.map(loadSearchShard));
+      const seen = new Set();
+      const matches = [];
+      const queryTokens = normalized.match(/[a-z0-9]+|[\u4e00-\u9fff]+/g) || [normalized];
+
+      for (const song of shards.flat()) {
+        if (seen.has(song.trackId)) continue;
+        const haystack = song._searchText || normalizeSearchText(`${song.trackName} ${song.artistName}`);
+        const isMatch = haystack.includes(normalized) || queryTokens.every(token => haystack.includes(token));
+        if (!isMatch) continue;
+        seen.add(song.trackId);
+        matches.push(song);
+        if (matches.length >= SEARCH_RESULT_LIMIT) break;
+      }
+
+      return matches;
+    }
+
+    function mergeSearchResults(...groups) {
+      const seen = new Set();
+      const merged = [];
+      for (const group of groups) {
+        for (const song of group) {
+          const key = song.trackId || `${song.trackName}-${song.artistName}-${song.year}`;
+          if (seen.has(key)) continue;
+          seen.add(key);
+          merged.push(song);
+          if (merged.length >= SEARCH_RESULT_LIMIT) return merged;
+        }
+      }
+      return merged;
+    }
+
+    function appendFullIndexHint(message) {
+      if (!ids.searchResults) return;
+      const hint = document.createElement("div");
+      hint.className = "search-hint";
+      hint.textContent = message;
+      ids.searchResults.appendChild(hint);
+    }
+
+    function queueFullIndexSearch(query, localResults = []) {
+      if (state.searchDebounceTimer) {
+        clearTimeout(state.searchDebounceTimer);
+        state.searchDebounceTimer = null;
+      }
+
+      const q = query.trim();
+      if (q.length < 3 || localResults.length >= SEARCH_RESULT_LIMIT) return;
+      const requestId = ++state.searchRequestId;
+
+      state.searchDebounceTimer = setTimeout(async () => {
+        if (!ids.songSearchInput || ids.songSearchInput.value.trim() !== q) return;
+        showSearchLoading("Searching full feature index...");
+        try {
+          const indexedResults = await searchFullIndex(q);
+          if (requestId !== state.searchRequestId) return;
+          const mergedResults = mergeSearchResults(indexedResults, localResults);
+          if (mergedResults.length) {
+            displaySearchResults(mergedResults);
+          } else {
+            showNoResults("No match found in the full feature index.");
+          }
+        } catch (err) {
+          if (requestId !== state.searchRequestId) return;
+          console.error("Search index error:", err);
+          showNoResults("Full feature search is unavailable. Make sure search-index/ is deployed.");
+        }
+      }, 650);
     }
 
     function displaySearchResults(songs, onSelect = selectSong) {
@@ -3798,158 +4013,43 @@
       const matches = localSearch(q);
       if (matches.length) {
         displaySearchResults(matches);
+        if (matches.length < SEARCH_RESULT_LIMIT) {
+          appendFullIndexHint("Quick matches only. Searching the full feature index next...");
+          queueFullIndexSearch(q, matches);
+        }
         return;
       }
 
-      showSearchLoading("No local matches. Press Find my song to search Spotify.");
-    }
-
-    async function getSpotifyToken() {
-      if (_spotifyToken && Date.now() < _spotifyTokenExp) {
-        return _spotifyToken;
-      }
-
-      if (
-        SPOTIFY_CLIENT_ID === "YOUR_CLIENT_ID_HERE" ||
-        SPOTIFY_CLIENT_SECRET === "YOUR_CLIENT_SECRET_HERE"
-      ) {
-        throw new Error("Spotify credentials are not configured.");
-      }
-
-      const resp = await fetch("https://accounts.spotify.com/api/token", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-          "Authorization": `Basic ${btoa(`${SPOTIFY_CLIENT_ID}:${SPOTIFY_CLIENT_SECRET}`)}`
-        },
-        body: "grant_type=client_credentials"
-      });
-
-      if (!resp.ok) {
-        throw new Error(`Spotify token request failed: ${resp.status}`);
-      }
-
-      const data = await resp.json();
-      _spotifyToken = data.access_token;
-      _spotifyTokenExp = Date.now() + ((data.expires_in || 3600) - 60) * 1000;
-      return _spotifyToken;
+      showSearchLoading("Searching full feature index...");
+      queueFullIndexSearch(q, matches);
     }
 
     async function handleSearch(query) {
       const q = query.trim();
       if (q.length < 2) return;
 
+      if (state.searchDebounceTimer) {
+        clearTimeout(state.searchDebounceTimer);
+        state.searchDebounceTimer = null;
+      }
+      const requestId = ++state.searchRequestId;
       clearChartUnavailableMessage();
       const localResults = localSearch(q);
-      if (localResults.length) {
-        displaySearchResults(localResults);
-        return;
-      }
 
-      showSearchLoading("Searching Spotify...");
+      showSearchLoading("Searching full feature index...");
       try {
-        const token = await getSpotifyToken();
-        const searchResp = await fetch(
-          `https://api.spotify.com/v1/search?q=${encodeURIComponent(q)}&type=track&limit=5`,
-          { headers: { "Authorization": `Bearer ${token}` } }
-        );
-
-        if (!searchResp.ok) {
-          throw new Error(`Spotify search failed: ${searchResp.status}`);
-        }
-
-        const searchData = await searchResp.json();
-        const tracks = searchData.tracks?.items || [];
-        if (!tracks.length) {
-          showNoResults();
-          return;
-        }
-
-        displaySpotifySearchResults(tracks);
-      } catch (err) {
-        console.error("Spotify API error:", err);
-        showNoResults("No local match found. Spotify search is unavailable until credentials are configured.");
-      }
-    }
-
-    function displaySpotifySearchResults(tracks) {
-      const mapped = tracks.map(track => ({
-        trackName: track.name,
-        artistName: track.artists.map(artist => artist.name).join(", "),
-        year: Number.parseInt((track.album.release_date || "").split("-")[0], 10),
-        _spotifyTrack: track
-      }));
-
-      displaySearchResults(mapped, song => {
-        if (song._spotifyTrack) {
-          selectSpotifyTrack(song._spotifyTrack);
-        }
-      });
-    }
-
-    async function selectSpotifyTrack(track) {
-      showSearchLoading("Loading Spotify audio features...");
-      try {
-        const token = await getSpotifyToken();
-        const featResp = await fetch(
-          `https://api.spotify.com/v1/audio-features/${track.id}`,
-          { headers: { "Authorization": `Bearer ${token}` } }
-        );
-
-        if (!featResp.ok) {
-          throw new Error(`Spotify audio features failed: ${featResp.status}`);
-        }
-
-        const feat = await featResp.json();
-        if (!feat || feat.error) {
-          showNoResults("Spotify did not return audio features for this track.");
-          return;
-        }
-
-        const releaseYear = Number.parseInt((track.album.release_date || "").split("-")[0], 10);
-        const durationMs = Number.isFinite(feat.duration_ms) ? feat.duration_ms : track.duration_ms;
-        const song = {
-          idx: `spotify-${track.id}`,
-          year: releaseYear,
-          duration: durationMs / 60000,
-          popularity: track.popularity,
-          trackId: track.id,
-          trackName: track.name,
-          artistName: track.artists.map(artist => artist.name).join(", "),
-          explicit: !!track.explicit,
-          features: {
-            danceability: Number.isFinite(feat.danceability) ? feat.danceability : null,
-            energy: Number.isFinite(feat.energy) ? feat.energy : null,
-            acousticness: Number.isFinite(feat.acousticness) ? feat.acousticness : null,
-            valence: Number.isFinite(feat.valence) ? feat.valence : null,
-            tempo: Number.isFinite(feat.tempo) ? feat.tempo : null
-          },
-          _fromSpotifyAPI: true
-        };
-
-        if (ids.searchResults) ids.searchResults.innerHTML = "";
-        if (ids.songSearchInput) ids.songSearchInput.value = `${song.trackName} ${song.artistName}`;
-        renderSelectedSongCard(song);
-        renderRadarChart(song);
-
-        const minYear = state.minYear;
-        const maxYear = state.maxYear;
-        if (Number.isFinite(releaseYear) && releaseYear >= minYear && releaseYear <= maxYear) {
-          state.selectedSong = song;
-          clearChartUnavailableMessage();
-          renderChart1();
-          renderChart2();
-          renderCompactCharts();
+        const indexedResults = await searchFullIndex(q);
+        if (requestId !== state.searchRequestId) return;
+        const mergedResults = mergeSearchResults(indexedResults, localResults);
+        if (mergedResults.length) {
+          displaySearchResults(mergedResults);
         } else {
-          state.selectedSong = null;
-          renderChart1();
-          renderChart2();
-          renderCompactCharts();
-          showChartUnavailableMessage(releaseYear, maxYear);
+          showNoResults("No match found in the full feature index.");
         }
       } catch (err) {
-        console.error("Spotify API error:", err);
-        showNoResults("Spotify track details are unavailable.");
+        if (requestId !== state.searchRequestId) return;
+        console.error("Search index error:", err);
+        showNoResults("Full feature search is unavailable. Make sure search-index/ is deployed.");
       }
     }
 
@@ -4353,12 +4453,7 @@
       });
 
       ids.songSearchBtn.addEventListener("click", async () => {
-        const firstResult = ids.searchResults?.querySelector(".search-result");
-        if (firstResult) {
-          firstResult.click();
-        } else {
-          await handleSearch(ids.songSearchInput.value);
-        }
+        await handleSearch(ids.songSearchInput.value);
       });
 
       ids.songSearchInput.addEventListener("keydown", event => {
